@@ -25,7 +25,6 @@ function rsc_library_install() {
  */
 function rsc_library_uninstall() {
   
-  /* Remove all fields associated with this module */
-//   TODO field_delete_field(''); 
+  /* Remove all fields associated with this module? */
   
 }

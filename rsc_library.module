@@ -36,6 +36,8 @@ function rsc_library_menu() {
 
 /**
  * Implements hook_node_info().
+ * 
+ * Defines the content types used by rsc_library
  */
 function rsc_library_node_info() {
   return array(
@@ -44,18 +46,12 @@ function rsc_library_node_info() {
       'base' => 'rsc_library_article',
       'description' => t("Library article with author, attachment, etc."),
       'locked'         => TRUE,  // admin cannot change machine name
-      'comment'        => array( // only applicable if comment module is installed
-        'status' => 1, // closed
-      ),
     ),
     'rsc_library_audio' => array(
       'name' => t('RSC Library: Audio'),
       'base' => 'rsc_library_audio',
       'description' => t("Audio with author, attachment, etc."),
       'locked'         => TRUE,  // admin cannot change machine name
-      'comment'        => array( // only applicable if comment module is installed
-        'status' => 1, // closed
-      ),
     ),
   );
 }
@@ -63,6 +59,8 @@ function rsc_library_node_info() {
 
 /**
  * Implements hook_form().
+ * 
+ * These forms allow the content types to be edited
  */
 function rsc_library_article_form($node, &$form_state) {
   return node_content_form($node, $form_state);
@@ -78,7 +76,7 @@ function rsc_library_audio_form($node, &$form_state) {
  * Calculate breadcrumbs for the current entity page
  */
 function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
-  $lid = 1; // TODO: multiple libraries
+
   $prefix = 'rscl';
   $home_url = '';
   $content_types = array(
@@ -94,6 +92,8 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
       case 'node':
         
         if (in_array($entity->type, $content_types)) {
+          
+          $lid = 1; // TODO: get lid from current entity
         
           // 1. load the library settings
           $settings = variable_get('rsc_library');

@@ -182,21 +182,24 @@ function rsc_library_field_config() {
         if ($vid > 0) {                                     // if a vocabulary has been configured
           $vocab = taxonomy_vocabulary_load($vid);
           $fieldname = "{$prefix}_{$field}_{$vocab->machine_name}"; // determine what this field should be called
-          // TODO: check for 32 character limit
-          if (!in_array($fieldname, $fieldnames)) {                 // create it if it doesn't exist yet
-            field_create_field(array(
-              'field_name'  => $fieldname,
-              'type'        => 'taxonomy_term_reference',
-              'cardinality' => $cardinality[$field],
-              'settings'    => array(
-                'allowed_values' => array(
-                  array(
-                    'vocabulary' => $vocab->machine_name,
-                    'parent'     => '0',
+          if (strlen($field_name) <= 32) { 
+            if (!in_array($fieldname, $fieldnames)) {                 // create it if it doesn't exist yet
+              field_create_field(array(
+                'field_name'  => $fieldname,
+                'type'        => 'taxonomy_term_reference',
+                'cardinality' => $cardinality[$field],
+                'settings'    => array(
+                  'allowed_values' => array(
+                    array(
+                      'vocabulary' => $vocab->machine_name,
+                      'parent'     => '0',
+                    ),
                   ),
                 ),
-              ),
-            ));
+              ));
+            }
+          } else {
+            drupal_set_message(t('Cannot create field @fieldname (more than 32 characters).', array('@fieldname' => $fieldname)),'error');
           }
         }
       }
