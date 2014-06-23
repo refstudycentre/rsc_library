@@ -1,0 +1,192 @@
+<?php
+
+include "rsc_library.blocks.inc";
+
+
+/**
+ * Implements hook_permission().
+ */
+function rsc_library_permission() {
+  return array(
+    'administer rsc_library' => array(
+      'title' => t('Administer RSC Libraries'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function rsc_library_menu() {
+  $items = array();
+
+  $items['admin/structure/rsc_library'] = array(
+    'title' => t('RSC Libraries'),
+    'description' => t('Configure libraries defined by the rsc_library module.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('rsc_library_settings'),
+    'file' => 'rsc_library.admin.inc',
+    'access arguments' => array('administer rsc_library'),
+  );
+
+  return $items;
+}
+
+
+/**
+ * Implements hook_node_info().
+ */
+function rsc_library_node_info() {
+  return array(
+    'rsc_library_article' => array(
+      'name' => t('RSC Library: Article'),
+      'base' => 'rsc_library_article',
+      'description' => t("Library article with author, attachment, etc."),
+      'locked'         => TRUE,  // admin cannot change machine name
+      'comment'        => array( // only applicable if comment module is installed
+        'status' => 1, // closed
+      ),
+    ),
+    'rsc_library_audio' => array(
+      'name' => t('RSC Library: Audio'),
+      'base' => 'rsc_library_audio',
+      'description' => t("Audio with author, attachment, etc."),
+      'locked'         => TRUE,  // admin cannot change machine name
+      'comment'        => array( // only applicable if comment module is installed
+        'status' => 1, // closed
+      ),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_form().
+ */
+function rsc_library_article_form($node, &$form_state) {
+  return node_content_form($node, $form_state);
+}
+function rsc_library_audio_form($node, &$form_state) {
+  return node_content_form($node, $form_state);
+}
+
+
+/**
+ * Implements hook_entity_view($entity, $type, $view_mode, $langcode).
+ *
+ * Calculate breadcrumbs for the current entity page
+ */
+function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
+  $lid = 1; // TODO: multiple libraries
+  $prefix = 'rscl';
+  $home_url = '';
+  $content_types = array(
+    'rsc_library_article',
+    'rsc_library_audio',
+  );
+  
+  if ($view_mode == 'full' && empty($GLOBALS['rsc_library']['breadcrumb_set'])) {
+    // this is a full page entity and the breadcrumbs have not yet been set
+    $breadcrumbs = array();
+
+    switch($type) {
+      case 'node':
+        
+        if (in_array($entity->type, $content_types)) {
+        
+          // 1. load the library settings
+          $settings = variable_get('rsc_library');
+          if (!empty($settings)) {
+  
+            // 2. get field name for categories in current section
+            $vocab = taxonomy_vocabulary_load($settings[$lid]['vocabs']['category']);
+            if (!empty($vocab)) {
+              $category_field_name = "{$prefix}_category_{$vocab->machine_name}";
+                
+              // 3. get the categories under which the node belongs
+              $categories = field_get_items($type, $entity, $category_field_name, $langcode);
+              if (!empty($categories)) {
+    
+                // 4. If the node is in multiple categories, use only the first one for breadcrumbs
+                $category = array_shift($categories);
+                $category_tid = $category['tid'];
+    
+                // 5. (Don't) Add the current page to the tail of the breadcrumb
+                // $title = drupal_get_title();
+                // $url = current_path();
+                // $breadcrumbs[] = l(rsc_library_shorten($title),$url, array('attributes'=>array('title'=>$title)));
+    
+                // 6. Get the parents of the current category and add them to the breadcrumbs
+                $category_parents = taxonomy_get_parents_all($category_tid);
+                foreach ($category_parents as $parent) {
+                  $uri = taxonomy_term_uri($parent);
+                  $breadcrumbs[] = l(rsc_library_shorten($parent->name), $uri['path'], array('attributes'=>array('title'=>$parent->name)));
+                }
+    
+                // 7. Add the library homepage to the head of the breadcrumb TODO: make this configurable per library
+                $breadcrumbs[] = l($settings[$lid]['title'],$home_url);
+                $breadcrumbs = array_reverse($breadcrumbs);
+              }
+            }
+          }
+        }
+
+        break;
+      case 'taxonomy_term':
+        
+        // 1. load the library settings
+        $settings = variable_get('rsc_library');
+        
+        // 2. Check whether this is a category taxonomy for the library (TODO: multiple)
+        if ($settings[$lid]['vocabs']['category'] == $entity->vid) {
+          
+          // 3. The current page will already be part of the $parents array in (2)
+          
+          // 4. Get the parents of the current term and add them to the breadcrumbs
+          $parents = taxonomy_get_parents_all($entity->tid);
+          foreach ($parents as $parent) {
+            $uri = taxonomy_term_uri($parent);
+            $breadcrumbs[] = l(rsc_library_shorten($parent->name), $uri['path'], array('attributes'=>array('title'=>$parent->name)));
+          }
+          array_shift($breadcrumbs);
+          
+          // 5. Add the library homepage to the head of the breadcrumb TODO: make this configurable per library
+          $breadcrumbs[] = l($settings[$lid]['title'],$home_url);
+          $breadcrumbs = array_reverse($breadcrumbs);
+        }
+
+        break;
+    }
+    
+    drupal_set_breadcrumb($breadcrumbs);
+    $GLOBALS['rsc_library']['breadcrumb_set'] = TRUE;
+    
+  }
+}
+
+
+/**
+ * Takes a string and shortens it by removing stopwords.
+ */
+function rsc_library_shorten($str) {
+  static $stopwords = array('a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in', 'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the', 'this', 'that', 'to', 'up', 'via', 'with');
+  $words = explode(' ', $str);
+  $ef; // ellips flag
+
+  foreach ($words as $key => $word) {
+    if (in_array($word,$stopwords)) {
+      if ($ef) {
+        unset($words[$key]);
+      } else {
+        $words[$key] = '…';
+        $ef = true;
+      }
+    } else {
+      $ef = false;
+    }
+  }
+  $str = implode(' ',$words);
+
+  return $str;
+}

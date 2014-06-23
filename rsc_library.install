@@ -1,0 +1,31 @@
+<?php
+
+
+/**
+ * Implements hook_install().
+ */
+function rsc_library_install() {
+  
+  module_load_include('inc','rsc_library','rsc_library.common');
+  
+  /* Settings for content types */
+  rsc_library_content_type_settings();
+  
+  /* Fields */
+  rsc_library_field_config();
+  
+  /* Field instances for content types */
+  rsc_library_field_instance_config();
+  
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function rsc_library_uninstall() {
+  
+  /* Remove all fields associated with this module */
+//   TODO field_delete_field(''); 
+  
+}

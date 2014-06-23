@@ -1,0 +1,16 @@
+name = RSC library
+description = Defines library-like functionality, including content types, categories and menus 
+core = 7.x
+package = "RSC"
+
+dependencies[] = taxonomy
+dependencies[] = menu
+dependencies[] = taxonomy_menu
+dependencies[] = taxonomy_manager
+dependencies[] = file
+dependencies[] = number
+dependencies[] = list
+dependencies[] = shs
+dependencies[] = pathauto
+
+configure = admin/structure/rsc_library
