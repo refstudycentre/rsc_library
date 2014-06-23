@@ -42,16 +42,22 @@ function rsc_library_menu() {
 function rsc_library_node_info() {
   return array(
     'rsc_library_article' => array(
-      'name' => t('RSC Library: Article'),
-      'base' => 'rsc_library_article',
+      'name'        => t('RSC Library: Article'),
+      'base'        => 'rsc_library_article',
       'description' => t("Library article with author, attachment, etc."),
-      'locked'         => TRUE,  // admin cannot change machine name
+      'locked'      => TRUE,  // admin cannot change machine name
     ),
     'rsc_library_audio' => array(
-      'name' => t('RSC Library: Audio'),
-      'base' => 'rsc_library_audio',
+      'name'        => t('RSC Library: Audio'),
+      'base'        => 'rsc_library_audio',
       'description' => t("Audio with author, attachment, etc."),
-      'locked'         => TRUE,  // admin cannot change machine name
+      'locked'      => TRUE,  // admin cannot change machine name
+    ),
+    'rsc_library' => array(
+      'name'        => t('RSC Library'),
+      'base'        => 'rsc_library_article',
+      'description' => t("Contains the settings and front page markup for a library."),
+      'locked'      => TRUE,  // admin cannot change machine name
     ),
   );
 }
@@ -66,6 +72,9 @@ function rsc_library_article_form($node, &$form_state) {
   return node_content_form($node, $form_state);
 }
 function rsc_library_audio_form($node, &$form_state) {
+  return node_content_form($node, $form_state);
+}
+function rsc_library_form($node, &$form_state) {
   return node_content_form($node, $form_state);
 }
 

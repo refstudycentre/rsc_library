@@ -45,6 +45,7 @@ function rsc_library_settings() {
     $links["admin/structure/taxonomy_manager/voc/{$vocab_cat->machine_name}"] = t('Manage category terms');
   }
   $links["admin/structure/taxonomy/add"] = t('Add a new vocabulary');
+  $links["admin/structure/types/manage/rsc-library"] = t('Edit "library" content type');
   $links["admin/structure/types/manage/rsc-library-article"] = t('Edit "article" content type');
   $links["admin/structure/types/manage/rsc-library-audio"] = t('Edit "audio" content type');
   if (isset($menus[$menu_name])) {

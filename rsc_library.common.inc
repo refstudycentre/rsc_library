@@ -20,6 +20,11 @@ function rsc_library_content_type_settings($content_types = array()) {
     variable_set("comment_{$type}", COMMENT_NODE_OPEN);       // open comments
     variable_set("menu_options_{$type}", array());           // no available menus
   }
+  variable_set("node_preview_rsc_library", 1);                  // Optional preview
+  variable_set("node_options_rsc_library", array());           // default unpublished
+  variable_set("node_submitted_rsc_library", 0);                // Unset 'Display author and date information'.
+  variable_set("comment_rsc_library", COMMENT_NODE_CLOSED);     // open comments
+  variable_set("menu_options_rsc_library", array());           // no available menus
   
   // pathauto settings
   variable_set("pathauto_node_rsc_library_article_pattern", 'article/[node:title]');
