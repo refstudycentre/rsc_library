@@ -220,3 +220,4 @@ function rsc_library_shorten($str) {
 
   return $str;
 }
+

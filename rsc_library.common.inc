@@ -35,7 +35,7 @@ function rsc_library_content_type_settings($content_types = array()) {
 
 /**
  * (re)create fields
- * FIXME: this uses outdated $settings variable when function is called in submit handler.
+ * FIXME: this uses outdated $settings variable if function is called in a library node edit form submit handler.
  * Workaround: submit form once for setting vocabs, second time for creating fields
  */
 function rsc_library_field_config($lid = NULL) {
@@ -234,6 +234,7 @@ function rsc_library_field_config($lid = NULL) {
 function rsc_library_field_instance_config($lid = NULL) {
   $t = get_t(); // this function might run during install, or any other time
   $prefix = "rscl";
+  $fields = array_keys(field_info_fields());
   
   $lids = array();
   if ($lid == NULL) {
@@ -246,12 +247,75 @@ function rsc_library_field_instance_config($lid = NULL) {
   
   $instances_audio = array_keys(field_info_instances('node','rsc_library_audio'));
   
-  // TODO!
+  $fieldname = "{$prefix}_body";
+  if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
+    field_create_instance(array(
+      'field_name'  => $fieldname,
+      'entity_type' => 'node',
+      'bundle'      => 'rsc_library_audio',
+      'label'       => $t('Summary'),
+      'required'    => false,
+      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'display'     => array(
+        'default' => array(
+          'label' => 'hidden',
+        ),
+      ),
+    ));
+    $instances_audio[] = $fieldname;
+  }
+  
+  $fieldname = "{$prefix}_attachment";
+  if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
+    field_create_instance(array(
+      'field_name'  => $fieldname,
+      'entity_type' => 'node',
+      'bundle'      => 'rsc_library_audio',
+      'label'       => $t('Attachment'),
+      'required'    => false,
+      'settings'    => array(
+        'file_extensions' => 'mp3',
+        'file_directory'  => 'audio',
+      ),
+      'display'     => array(
+        'default' => array(
+          'label' => 'hidden',
+        ),
+      ),
+    ));
+    $instances_audio[] = $fieldname;
+  }
+  
+  // The next few instances are almost identical
+  $fieldlabels = array(
+    'weight'    => $t('Weight'),
+    'source'    => $t('Source'),
+    'code'      => $t('Code'),
+    'link'      => $t('Link'),
+  );
+  
+  foreach ($fieldlabels as $fname => $label) {
+    $fieldname = "{$prefix}_{$fname}";
+    if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
+      field_create_instance(array(
+        'field_name'  => $fieldname,
+        'entity_type' => 'node',
+        'bundle'      => 'rsc_library_audio',
+        'label'       => $label,
+        'required'    => false,
+        'display'     => array(
+          'default' => array(
+            'type' => 'hidden',
+          ),
+        ),
+      ));
+    }
+    $instances_audio[] = $fieldname;
+  }
 
   /* Field instances for articles */
-
+  
   $instances_article = array_keys(field_info_instances('node','rsc_library_article'));
-  $fields = array_keys(field_info_fields());
 
   $fieldname = "{$prefix}_body";
   if (!in_array($fieldname, $instances_article) && in_array($fieldname, $fields)) {
@@ -342,7 +406,7 @@ function rsc_library_field_instance_config($lid = NULL) {
     'difficulty' => array('type' => 'options_select'),
   );
 
-  foreach ($lids as $lid) {                                        // for each library
+  foreach ($lids as $lid) { // for each library
     $settings = variable_get("rsc_library_{$lid}",NULL);
     $cat_vocab = taxonomy_vocabulary_load($settings['vocabs']['category']);
     $instances_cat = array_keys(field_info_instances('taxonomy_term',$cat_vocab->machine_name));
@@ -362,8 +426,10 @@ function rsc_library_field_instance_config($lid = NULL) {
           $vocab = taxonomy_vocabulary_load($vid);
           $fieldname = "{$prefix}_{$field}_{$vocab->machine_name}"; // determine what this field is called
           if (in_array($fieldname, $fields)) {                      // if the field exists
-            if (!in_array($fieldname, $instances_article)) {                // if the instance does not exist yet
-              field_create_instance(array(                          // create the instance
+
+            // for articles
+            if (!in_array($fieldname, $instances_article)) { // if the instance does not exist yet
+              field_create_instance(array(                   // create the instance
                 'field_name'  => $fieldname,
                 'entity_type' => 'node',
                 'bundle'      => 'rsc_library_article',
@@ -378,13 +444,30 @@ function rsc_library_field_instance_config($lid = NULL) {
               ));
               $instances_article[] = $fieldname;
             }
+            
+            // for audio
+            if (!in_array($fieldname, $instances_audio)) { // if the instance does not exist yet
+              field_create_instance(array(                 // create the instance
+                'field_name'  => $fieldname,
+                'entity_type' => 'node',
+                'bundle'      => 'rsc_library_audio',
+                'label'       => $label[$field],
+                'required'    => false,
+                'display'     => array(
+                  'default' => array(
+                    'type' => 'hidden',
+                  ),
+                ),
+                'widget'      => $widget[$field],
+              ));
+              $instances_audio[] = $fieldname;
+            }
+            
           } else {
             drupal_set_message(t('Cannot create instance of non-existing field <strong>@fieldname</strong> on taxonomy bundle <strong>@bundle</strong> for library <strong>@lid</strong>.',array('@fieldname'=>$fieldname,'@bundle'=>$vocab->machine_name,'@lid'=>$lid)),'error');
           }
         }
       }
-      
-      // TODO: taxonomy reference field instances for audio
     
       // featured field instance for 'category' taxonomy terms
       $fieldname = "{$prefix}_featured";
