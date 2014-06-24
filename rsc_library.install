@@ -11,12 +11,6 @@ function rsc_library_install() {
   /* Settings for content types */
   rsc_library_content_type_settings();
   
-  /* Fields */
-  rsc_library_field_config();
-  
-  /* Field instances for content types */
-  rsc_library_field_instance_config();
-  
 }
 
 
@@ -24,7 +18,5 @@ function rsc_library_install() {
  * Implements hook_uninstall().
  */
 function rsc_library_uninstall() {
-  
-  /* Remove all fields associated with this module? */
-  
+  // TODO: remove variables
 }

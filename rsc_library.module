@@ -55,7 +55,7 @@ function rsc_library_node_info() {
     ),
     'rsc_library' => array(
       'name'        => t('RSC Library'),
-      'base'        => 'rsc_library_article',
+      'base'        => 'rsc_library',
       'description' => t("Contains the settings and front page markup for a library."),
       'locked'      => TRUE,  // admin cannot change machine name
     ),
@@ -75,7 +75,27 @@ function rsc_library_audio_form($node, &$form_state) {
   return node_content_form($node, $form_state);
 }
 function rsc_library_form($node, &$form_state) {
-  return node_content_form($node, $form_state);
+  $form = node_content_form($node, $form_state);
+  
+  module_load_include('inc','rsc_library','rsc_library.admin');
+  $form['rsc_library_node_settings'] = rsc_library_node_settings($node);
+  if (!empty($form['rsc_library_node_settings']['#submit'])) {
+    $form['#submit'][] = $form['rsc_library_node_settings']['#submit'];
+  }
+  
+  return $form;
+}
+
+
+/**
+ * Implements hook_node_delete().
+ */
+function rsc_library_node_delete($node) {
+  if ('rsc_library' == $node->type) {    
+    // clean up library variables
+    variable_del("rsc_library_{$node->nid}");
+    // TODO: how to find and delete the correct rscl_category_* variable? Search by value?
+  }
 }
 
 
@@ -85,93 +105,94 @@ function rsc_library_form($node, &$form_state) {
  * Calculate breadcrumbs for the current entity page
  */
 function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
-
-  $prefix = 'rscl';
-  $home_url = '';
-  $content_types = array(
-    'rsc_library_article',
-    'rsc_library_audio',
-  );
-  
-  if ($view_mode == 'full' && empty($GLOBALS['rsc_library']['breadcrumb_set'])) {
-    // this is a full page entity and the breadcrumbs have not yet been set
-    $breadcrumbs = array();
-
-    switch($type) {
-      case 'node':
-        
-        if (in_array($entity->type, $content_types)) {
-          
-          $lid = 1; // TODO: get lid from current entity
-        
-          // 1. load the library settings
-          $settings = variable_get('rsc_library');
-          if (!empty($settings)) {
-  
-            // 2. get field name for categories in current section
-            $vocab = taxonomy_vocabulary_load($settings[$lid]['vocabs']['category']);
-            if (!empty($vocab)) {
-              $category_field_name = "{$prefix}_category_{$vocab->machine_name}";
-                
-              // 3. get the categories under which the node belongs
+  if (('node' == $type) && ('rsc_library' == $entity->type)) {
+    
+    $GLOBALS['rsc_library']['lid'] = $entity->nid;
+    
+  } else {
+    $content_types = array(
+      'rsc_library_article',
+      'rsc_library_audio',
+    );
+    
+    if ($view_mode == 'full' && empty($GLOBALS['rsc_library']['breadcrumb_set'])) {
+      // this is a full page entity and the breadcrumbs have not yet been set
+      $breadcrumbs = array();
+      $lid = NULL;
+    
+      switch($type) {
+        case 'node':
+    
+          if (in_array($entity->type, $content_types)) {
+            $category_field_name = '';
+    
+            // determine the current library
+            foreach($entity as $key => $val) {
+              if (substr($key, 0, 14) === 'rscl_category_' && field_get_items('node',$entity,$key)) { // if the node is listed under a specific library's categories
+                $lid = variable_get($key,NULL);
+                if ($lid != NULL) {
+                  $category_field_name = $key;
+                  break;
+                }
+              }
+            }
+    
+            if ($lid != NULL) { // if the library was determined
+    
+              // get the categories under which the node belongs
               $categories = field_get_items($type, $entity, $category_field_name, $langcode);
               if (!empty($categories)) {
     
-                // 4. If the node is in multiple categories, use only the first one for breadcrumbs
+                // If the node is in multiple categories, use only the first one for breadcrumbs
                 $category = array_shift($categories);
                 $category_tid = $category['tid'];
     
-                // 5. (Don't) Add the current page to the tail of the breadcrumb
-                // $title = drupal_get_title();
-                // $url = current_path();
-                // $breadcrumbs[] = l(rsc_library_shorten($title),$url, array('attributes'=>array('title'=>$title)));
-    
-                // 6. Get the parents of the current category and add them to the breadcrumbs
+                // Get the parents of the current category and add them to the breadcrumbs
                 $category_parents = taxonomy_get_parents_all($category_tid);
                 foreach ($category_parents as $parent) {
                   $uri = taxonomy_term_uri($parent);
                   $breadcrumbs[] = l(rsc_library_shorten($parent->name), $uri['path'], array('attributes'=>array('title'=>$parent->name)));
                 }
     
-                // 7. Add the library homepage to the head of the breadcrumb TODO: make this configurable per library
-                $breadcrumbs[] = l($settings[$lid]['title'],$home_url);
+                // Add the library homepage to the head of the breadcrumb
+                $breadcrumbs[] = l($entity->title,"node/{$entity->nid}");
                 $breadcrumbs = array_reverse($breadcrumbs);
               }
             }
           }
-        }
-
-        break;
-      case 'taxonomy_term':
-        
-        // 1. load the library settings
-        $settings = variable_get('rsc_library');
-        
-        // 2. Check whether this is a category taxonomy for the library (TODO: multiple)
-        if ($settings[$lid]['vocabs']['category'] == $entity->vid) {
-          
-          // 3. The current page will already be part of the $parents array in (2)
-          
-          // 4. Get the parents of the current term and add them to the breadcrumbs
-          $parents = taxonomy_get_parents_all($entity->tid);
-          foreach ($parents as $parent) {
-            $uri = taxonomy_term_uri($parent);
-            $breadcrumbs[] = l(rsc_library_shorten($parent->name), $uri['path'], array('attributes'=>array('title'=>$parent->name)));
+    
+          break;
+        case 'taxonomy_term':
+    
+          // determine the current library
+          $lid = variable_get("rscl_category_{$entity->vocabulary_machine_name}", NULL);
+    
+          if ($lid != NULL) {
+    
+            // get the parents of the current term and add them to the breadcrumbs
+            $parents = taxonomy_get_parents_all($entity->tid); // this function includes the current term
+            foreach ($parents as $parent) {
+              $uri = taxonomy_term_uri($parent);
+              $breadcrumbs[] = l(rsc_library_shorten($parent->name), $uri['path'], array('attributes'=>array('title'=>$parent->name)));
+            }
+            array_shift($breadcrumbs);
+    
+            // 5. Add the library homepage to the head of the breadcrumb
+            $home_node = node_load($lid);
+            $breadcrumbs[] = l($home_node->title,"node/{$lid}");
+            $breadcrumbs = array_reverse($breadcrumbs);
           }
-          array_shift($breadcrumbs);
-          
-          // 5. Add the library homepage to the head of the breadcrumb TODO: make this configurable per library
-          $breadcrumbs[] = l($settings[$lid]['title'],$home_url);
-          $breadcrumbs = array_reverse($breadcrumbs);
-        }
-
-        break;
+    
+          break;
+      }
+    
+      drupal_set_breadcrumb($breadcrumbs);
+      $GLOBALS['rsc_library']['breadcrumb_set'] = TRUE;
+      $GLOBALS['rsc_library']['lid'] = $lid; // set the current library for blocks and other modules to take note of
+    
     }
-    
-    drupal_set_breadcrumb($breadcrumbs);
-    $GLOBALS['rsc_library']['breadcrumb_set'] = TRUE;
-    
   }
+
 }
 
 
