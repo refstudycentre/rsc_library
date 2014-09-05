@@ -179,7 +179,9 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
     
             // 5. Add the library homepage to the head of the breadcrumb
             $home_node = node_load($lid);
-            $breadcrumbs[] = l($home_node->title,"node/{$lid}");
+            if (!empty($home_node)) {
+              $breadcrumbs[] = l($home_node->title,"node/{$lid}");
+            } // else library was probably deleted, but categories remained
             $breadcrumbs = array_reverse($breadcrumbs);
           }
     
