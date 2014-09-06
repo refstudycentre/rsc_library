@@ -181,6 +181,22 @@ function rsc_library_field_config($lid = NULL) {
       ),
     ));
   }
+  
+  // sort_enabled
+  $fieldname = "{$prefix}_sort_enabled";
+  if (!in_array($fieldname,$fieldnames)) {
+    field_create_field(array(
+      'field_name'  => $fieldname,
+      'type'        => 'list_boolean',
+      'cardinality' => 1,
+      'settings'    => array(
+        'allowed_values' => array(
+          0 => '',
+          1 => '',
+        ),
+      ),
+    ));
+  }
 
   // values reused in the foreach below
   $cardinality = array(
@@ -477,6 +493,30 @@ function rsc_library_field_instance_config($lid = NULL) {
           'entity_type' => 'taxonomy_term',
           'bundle'      => $cat_vocab->machine_name,
           'label'       => $t('Featured'),
+          'required'    => false,
+          'display'     => array(
+            'default' => array(
+              'type' => 'hidden',
+            ),
+          ),
+          'widget'      => array(
+            'type'     => 'options_onoff',
+            'settings' => array(
+              'display_label' => 1,
+            ),
+          ),
+        ));
+        $instances_cat[] = $fieldname; // add instance to list of names to prevent duplicate creation attempts
+      }
+    
+      // sort_enabled field instance for 'category' taxonomy terms
+      $fieldname = "{$prefix}_sort_enabled";
+      if (!in_array($fieldname, $instances_cat) && in_array($fieldname, $fields)) { // create it if it doesn't exist yet
+        field_create_instance(array(
+          'field_name'  => $fieldname,
+          'entity_type' => 'taxonomy_term',
+          'bundle'      => $cat_vocab->machine_name,
+          'label'       => $t('Enable node sorting'),
           'required'    => false,
           'display'     => array(
             'default' => array(
