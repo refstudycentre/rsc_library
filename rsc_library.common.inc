@@ -302,12 +302,29 @@ function rsc_library_field_instance_config($lid = NULL) {
     $instances_audio[] = $fieldname;
   }
   
+  $fieldname = "{$prefix}_link";
+  if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
+    field_create_instance(array(
+      'field_name'  => $fieldname,
+      'entity_type' => 'node',
+      'bundle'      => 'rsc_library_audio',
+      'label'       => $t('Link'),
+      'required'    => false,
+      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+    ));
+    $instances_audio[] = $fieldname;
+  }
+  
   // The next few instances are almost identical
   $fieldlabels = array(
     'weight'    => $t('Weight'),
     'source'    => $t('Source'),
     'code'      => $t('Code'),
-    'link'      => $t('Link'),
   );
   
   foreach ($fieldlabels as $fname => $label) {
@@ -325,8 +342,8 @@ function rsc_library_field_instance_config($lid = NULL) {
           ),
         ),
       ));
+      $instances_audio[] = $fieldname;
     }
-    $instances_audio[] = $fieldname;
   }
 
   /* Field instances for articles */
@@ -371,6 +388,24 @@ function rsc_library_field_instance_config($lid = NULL) {
     ));
     $instances_article[] = $fieldname;
   }
+  
+  $fieldname = "{$prefix}_link";
+  if (!in_array($fieldname, $instances_article) && in_array($fieldname, $fields)) {
+    field_create_instance(array(
+      'field_name'  => $fieldname,
+      'entity_type' => 'node',
+      'bundle'      => 'rsc_library_article',
+      'label'       => $t('Link'),
+      'required'    => false,
+      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+    ));
+    $instances_article[] = $fieldname;
+  }
 
   // The next few instances are almost identical
   $fieldlabels = array(
@@ -381,7 +416,6 @@ function rsc_library_field_instance_config($lid = NULL) {
     'editor'    => $t('Editor'),
     'code'      => $t('Code'),
     'publisher' => $t('Publisher'),
-    'link'      => $t('Link'),
     'date'      => $t('Date'),
   );
 
@@ -400,8 +434,8 @@ function rsc_library_field_instance_config($lid = NULL) {
           ),
         ),
       ));
+      $instances_article[] = $fieldname;
     }
-    $instances_article[] = $fieldname;
   }
   
   // values that are being reused in the foreach below
