@@ -20,6 +20,17 @@ function rsc_library_block_info() {
     'info'  => t('RSC Library: Featured categories'),
     'cache' => DRUPAL_NO_CACHE,  // we cache the query result inside block_view
   );
+  
+  module_load_include('inc','rsc_library','rsc_library.common');
+  $lids = rsc_library_get_lids();
+  foreach ($lids as $lid) {  // for each library
+    $library = node_load($lid);
+    
+    $blocks["lib_teaser_$lid"] = array(
+      'info'  => t("RSC Library: Teaser block for library \"{$library->title}\""),
+      'cache' => DRUPAL_CACHE_PER_ROLE,  // not every library is public
+    );
+  }
 
   return $blocks;
 }
@@ -31,8 +42,19 @@ function rsc_library_block_info() {
 function rsc_library_block_view($delta = '') {
   $prefix = 'rscl';
   $block = array();
-
-  if (!empty($GLOBALS['rsc_library']['lid'])) {
+  
+  if (substr($delta,0,11)=="lib_teaser_") {
+    
+    $lid = substr($delta,11); // remove first 11 characters, the rest is the lid
+    if (is_numeric($lid)) {
+      $block = array(
+        'subject' => '',
+        'content' => node_view(node_load($lid), 'teaser'),
+      );
+    }
+    
+  } else if (!empty($GLOBALS['rsc_library']['lid'])) {
+    
     $lid = $GLOBALS['rsc_library']['lid'];
     
     switch ($delta) {
