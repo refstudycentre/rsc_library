@@ -109,6 +109,12 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
     
     $GLOBALS['rsc_library']['lid'] = $entity->nid;
     
+  } else if (('taxonomy_term' == $type) && ('full' == $view_mode) && (!empty($entity->field_library_id))) {
+
+    $lid = field_get_items($type, $entity, 'field_library_id');
+    $lid = array_shift($lid);
+    $GLOBALS['rsc_library']['lid'] = $lid['value'];
+    
   } else {
     $content_types = array(
       'rsc_library_article',
