@@ -105,7 +105,7 @@ function rsc_library_node_delete($node) {
  * Calculate breadcrumbs for the current entity page
  */
 function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
-  if (('node' == $type) && ('rsc_library' == $entity->type)) {
+  if (('node' == $type) && ('rsc_library' == $entity->type) && ('full' == $view_mode)) {
     
     $GLOBALS['rsc_library']['lid'] = $entity->nid;
     
