@@ -205,6 +205,17 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
 
 
 /**
+ * Implements hook_entity_info_alter().
+ */
+function rsc_library_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['rscl_block'] = array(
+    'label' => t('RSC Library block listing'),
+    'custom settings' => TRUE,
+  );
+}
+
+
+/**
  * Takes a string and shortens it by removing stopwords.
  */
 function rsc_library_shorten($str) {

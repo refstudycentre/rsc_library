@@ -83,7 +83,8 @@ function rsc_library_block_view($delta = '') {
                   $node_lid = variable_get($key,NULL);
                   
                   // group nodes by lid
-                  $items[$node_lid][$node->nid] = l($node->title,"node/{$node->nid}");
+                  // $items[$node_lid][$node->nid] = l($node->title,"node/{$node->nid}"); // TODO: make this configurable: simple link vs. rendered content
+                  $items[$node_lid][$node->nid] = render(node_view($node,'rscl_block'));
                 }
               }
             }
@@ -148,7 +149,8 @@ function rsc_library_block_view($delta = '') {
                   $node_lid = variable_get($key,NULL);
               
                   // group nodes by lid
-                  $items[$node_lid][$node->nid] = l($node->title,"node/{$node->nid}");
+                  // $items[$node_lid][$node->nid] = l($node->title,"node/{$node->nid}"); // TODO: make this configurable: simple link vs. rendered content
+                  $items[$node_lid][$node->nid] = render(node_view($node,'rscl_block'));
                 }
               }
             }
@@ -160,7 +162,7 @@ function rsc_library_block_view($delta = '') {
         } else { // data is available from cache
           $items = $items->data;
         }
-  
+        
         if (!empty($items[$lid])) {
           $items = $items[$lid]; // just display the current library's nodes
   
