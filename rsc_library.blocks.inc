@@ -60,7 +60,7 @@ function rsc_library_block_view($delta = '') {
     switch ($delta) {
       case 'feat_node':
   
-//         $items = cache_get('rsc_library_feat_nodes');
+        $items = cache_get('rsc_library_feat_nodes');
         if (empty($items)) { // if the data is not available from cache
           $items = array();
   
@@ -125,7 +125,7 @@ function rsc_library_block_view($delta = '') {
         break;
       case 'new_node':
   
-//         $items = cache_get('rsc_library_new_nodes');
+        $items = cache_get('rsc_library_new_nodes');
         if (empty($items)) { // if the data is not available from cache
           $items = array();
   
@@ -158,6 +158,7 @@ function rsc_library_block_view($delta = '') {
   
           // cache the list of newest nodes 'permanently', clear during hook_node_save
           cache_set('rsc_library_new_nodes', $items, 'cache', CACHE_PERMANENT);
+          // TODO: cache the entire markup, because the order never changes between cache clears
   
         } else { // data is available from cache
           $items = $items->data;
@@ -179,7 +180,7 @@ function rsc_library_block_view($delta = '') {
         break;
       case 'feat_cat':
   
-//         $items = cache_get("rsc_library_feat_cats_{$lid}");
+        $items = cache_get("rsc_library_feat_cats_{$lid}");
         if (empty($items)) { // if the data is not available from cache
           $items = array();
   
