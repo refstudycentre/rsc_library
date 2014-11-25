@@ -125,6 +125,7 @@ function rsc_library_node_settings($node = NULL) {
         'category'   => '-1',
         'tag'        => '-1',
         'author'     => '-1',
+        'source'     => '-1',
         'difficulty' => '-1',
       ),
     );
@@ -186,6 +187,16 @@ function rsc_library_node_settings($node = NULL) {
       '#title'         => t('authors'),
       '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
       '#default_value' => $settings['vocabs']['author'],
+      '#options'       => $vocab_options,
+    );
+  
+    $form['vocabs']['source'] = array(
+      '#type'          => 'select',
+      '#required'      => FALSE,
+      '#multiple'      => FALSE,
+      '#title'         => t('sources'),
+      '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
+      '#default_value' => $settings['vocabs']['source'],
       '#options'       => $vocab_options,
     );
   

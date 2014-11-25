@@ -106,16 +106,6 @@ function rsc_library_field_config($lid = NULL) {
     ));
   }
 
-  // source
-  $fieldname = "{$prefix}_source";
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'text',
-      'cardinality' => 1,
-    ));
-  }
-
   // editor
   $fieldname = "{$prefix}_editor";
   if (!in_array($fieldname,$fieldnames)) {
@@ -204,6 +194,7 @@ function rsc_library_field_config($lid = NULL) {
     'tag'        => FIELD_CARDINALITY_UNLIMITED,
     'category'   => 1,
     'difficulty' => 1,
+    'source'     => 1,
   );
   
   foreach($lids as $lid) {                                         // for each library
@@ -323,7 +314,6 @@ function rsc_library_field_instance_config($lid = NULL) {
   // The next few instances are almost identical
   $fieldlabels = array(
     'weight'    => $t('Weight'),
-    'source'    => $t('Source'),
     'code'      => $t('Code'),
   );
   
@@ -412,7 +402,6 @@ function rsc_library_field_instance_config($lid = NULL) {
     'pages'     => $t('Pages'),
     'weight'    => $t('Weight'),
     'format'    => $t('Format'),
-    'source'    => $t('Source'),
     'editor'    => $t('Editor'),
     'code'      => $t('Code'),
     'publisher' => $t('Publisher'),
@@ -452,6 +441,7 @@ function rsc_library_field_instance_config($lid = NULL) {
       ),
     ),
     'author'     => array('type' => 'options_select'),
+    'source'     => array('type' => 'options_select'),
     'tag'        => array('type' => 'options_select'),
     'difficulty' => array('type' => 'options_select'),
   );
@@ -465,6 +455,7 @@ function rsc_library_field_instance_config($lid = NULL) {
       $node_front = node_load($lid);
       $label = array(
         'author'     => $t('Author'),
+        'source'     => $t('Source'),
         'tag'        => $t('Tags'),
         'category'   => $t('Category (in "@lib")',array('@lib'=>$node_front->title)),
         'difficulty' => $t('Difficulty'),
