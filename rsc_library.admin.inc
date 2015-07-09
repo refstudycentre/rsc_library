@@ -16,7 +16,7 @@ function rsc_library_settings() {
   
   /* collect info from this module */
   $default_settings = array();
-  $settings = variable_get('rsc_library',$default_settings);
+  //$settings = variable_get('rsc_library',$default_settings);
   
   /* build the form */
   $form['#tree'] = TRUE; // save the whole thing as an array
