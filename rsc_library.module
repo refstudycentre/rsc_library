@@ -309,3 +309,19 @@ function rsc_library_preprocess_field(&$vars) {
 
 }
 
+
+/**
+ * Implements hook_node_access($node, $op, $account)
+ * https://api.drupal.org/api/drupal/modules%21node%21node.api.php/function/hook_node_access/7
+ * Determine node access based on the library that it belongs to, if any.
+ * Nodes belonging to a library inherit the library node's permissions.
+ */
+function rsc_library_node_access($node, $op, $account) {
+
+  // TODO: find the library that this node belongs to, if any, else return IGNORE
+
+  // TODO: check the node access of the library for the given operation and account and return that
+  // (if there are multiple libraries, return the most permissive result)
+
+}
+
