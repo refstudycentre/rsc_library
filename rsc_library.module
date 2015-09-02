@@ -258,3 +258,54 @@ function rsc_library_preprocess_node(&$vars) {
   }
 
 }
+
+
+/**
+ * Implements template_preprocess_field(&$variables, $hook)
+ * https://api.drupal.org/api/drupal/modules%21field%21field.module/function/template_preprocess_field/7
+ */
+function rsc_library_preprocess_field(&$vars) {
+
+  if ($vars['element']['#bundle'] == 'rsc_library_article') {
+
+    // microdata
+    // TODO: auto-detect field-names or make them manually configurable
+    switch ($vars['element']['#field_name']) {
+
+      case 'body':
+        $vars['attributes_array']['itemprop'] = 'description';
+        foreach($vars['items'] as &$item) {
+          $item = preg_replace('/<a/','<a itemprop="about"',$item);
+        }
+        break;
+
+      case 'field_author_tax':
+        foreach ($vars['items'] as &$item) {
+          $item['#options']['attributes']['itemprop'] = 'author';
+        }
+        break;
+
+      case 'field_link':
+        foreach ($vars['items'] as &$item) {
+          $item['#markup'] = preg_replace('/<a/','$0 itemprop="url"',$item['#markup']);
+        }
+        break;
+
+      case 'field_attachment':
+        foreach ($vars['items'] as &$item) {
+          $item['#markup'] = preg_replace('/<li class="read"><a/','$0 itemprop="url"',$item['#markup']);
+        }
+        break;
+
+      case 'field_source_tax':
+        $vars['attributes_array']['itemprop'] = 'publisher';
+        break;
+
+      case 'field_date':
+        $vars['attributes_array']['itemprop'] = 'datePublished';
+        break;
+    }
+  }
+
+}
+
