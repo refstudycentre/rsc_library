@@ -32,7 +32,6 @@ function rsc_library_install() {
 
   // Assign the necessary permissions to library staff
   user_role_change_permissions($role->rid, array(
-    'administer nodes' => true,
     'access content overview' => true,
     'access content' => true,
     'view own unpublished content' => true,
