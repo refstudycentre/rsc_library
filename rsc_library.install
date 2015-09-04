@@ -8,8 +8,49 @@ function rsc_library_install() {
   
   module_load_include('inc','rsc_library','rsc_library.common');
   
-  /* Settings for content types */
+  /*
+   * Settings for content types
+   */
   rsc_library_content_type_settings();
+
+  /*
+   * Set up the role and permissions for library staff
+   */
+
+  $rolename = 'rsc library staff';
+
+  // Try to load the role to see if it exists
+  $role = user_role_load_by_name($rolename);
+  if (!$role) {
+    // create it, since it does not exist
+    $role = new stdClass();
+    $role->name = $rolename;
+    user_role_save($role);
+    // load the newly created role, to get the rid
+    $role = user_role_load_by_name($rolename);
+  }
+
+  // Assign the necessary permissions to library staff
+  user_role_change_permissions($role->rid, array(
+    'administer nodes' => true,
+    'access content overview' => true,
+    'access content' => true,
+    'view own unpublished content' => true,
+    'view revisions' => true,
+    'revert revisions' => true,
+    'delete revisions' => true,
+    'view the administration theme' => true,
+    'create rsc_library_article content' => true,
+    'edit own rsc_library_article content' => true,
+    'edit any rsc_library_article content' => true,
+    'delete own rsc_library_article content' => true,
+    'delete any rsc_library_article content' => true,
+    'create rsc_library_audio content' => true,
+    'edit own rsc_library_audio content' => true,
+    'edit any rsc_library_audio content' => true,
+    'delete own rsc_library_audio content' => true,
+    'delete any rsc_library_audio content' => true,
+  ));
   
 }
 

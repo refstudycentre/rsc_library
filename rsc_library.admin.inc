@@ -219,6 +219,11 @@ function rsc_library_node_settings($node = NULL) {
       '#default_value' => $settings['vocabs']['difficulty'],
       '#options'       => $vocab_options,
     );
+
+    $form['vocabs']['permission_reminder'] = array(
+      '#type'   => 'markup',
+      '#markup' => '<p>Remember to give the "RSC library staff" role permissions to add, edit and/or delete terms in these vocabularies.</p>'
+    );
   
     $form['actions'] = array(
       '#type'              => 'radios',
