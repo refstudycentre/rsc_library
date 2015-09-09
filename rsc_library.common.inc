@@ -433,17 +433,17 @@ function rsc_library_field_instance_config($lid = NULL) {
       'type'     => 'taxonomy_shs',
       'settings' => array(
         'shs' => array(
-          'node_count' => FALSE,
+          'node_count' => TRUE,
           'create_new_terms' => FALSE,
           'create_new_levels' => FALSE,
           'force_deepest' => FALSE,
         ),
       ),
     ),
-    'author'     => array('type' => 'options_select'),
-    'source'     => array('type' => 'options_select'),
-    'tag'        => array('type' => 'options_select'),
-    'difficulty' => array('type' => 'options_select'),
+    'author'     => array('type' => 'taxonomy_autocomplete'),
+    'source'     => array('type' => 'taxonomy_autocomplete'),
+    'tag'        => array('type' => 'taxonomy_autocomplete'),
+    'difficulty' => array('type' => 'options_buttons'),
   );
 
   foreach ($lids as $lid) { // for each library
