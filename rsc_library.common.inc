@@ -190,9 +190,9 @@ function rsc_library_field_config($lid = NULL) {
 
   // values reused in the foreach below
   $cardinality = array(
-    'author'     => 1,
+    'author'     => FIELD_CARDINALITY_UNLIMITED,
     'tag'        => FIELD_CARDINALITY_UNLIMITED,
-    'category'   => 1,
+    'category'   => FIELD_CARDINALITY_UNLIMITED,
     'difficulty' => 1,
     'source'     => 1,
   );
