@@ -104,6 +104,8 @@ function rsc_library_settings_submit($form, &$form_state) {
 
 /**
  * Form builder for the node settings page
+ * @param stdClass|null $node The node being edited, or null when creating a new node
+ * @return array The form array
  */
 function rsc_library_node_settings($node = NULL) {
   $form = array();
@@ -120,19 +122,9 @@ function rsc_library_node_settings($node = NULL) {
     }
   
     /* collect info from this library */
-    $default_settings = array(
-      'vocabs' => array(
-        'category'   => '-1',
-        'tag'        => '-1',
-        'author'     => '-1',
-        'source'     => '-1',
-        'difficulty' => '-1',
-      ),
-    );
-      
-    $settings = variable_get("rsc_library_{$node->nid}",$default_settings);
+    $settings = variable_get("rsc_library_{$node->nid}", array());
     
-    $vocab_cat = taxonomy_vocabulary_load($settings['vocabs']['category']);
+    $vocab_cat = isset($settings['vocabs']['category']) ? taxonomy_vocabulary_load($settings['vocabs']['category']) : null;
     $menu_name = "rsc_library_{$node->nid}";
     $menus = menu_get_menus();
   
@@ -176,7 +168,7 @@ function rsc_library_node_settings($node = NULL) {
       '#multiple'      => FALSE,
       '#title'         => t('categories'),
       '#description'   => t('A menu will be created and populated with the terms of this vocabulary. <br/> A reference field to terms in this vocabulary will be created on library content types.'),
-      '#default_value' => $settings['vocabs']['category'],
+      '#default_value' => isset($settings['vocabs']['category']) ? $settings['vocabs']['category'] : -1,
       '#options'       => $vocab_options,
     );
   
@@ -186,7 +178,7 @@ function rsc_library_node_settings($node = NULL) {
       '#multiple'      => FALSE,
       '#title'         => t('authors'),
       '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
-      '#default_value' => $settings['vocabs']['author'],
+      '#default_value' => isset($settings['vocabs']['author']) ? $settings['vocabs']['author'] : -1,
       '#options'       => $vocab_options,
     );
   
@@ -196,7 +188,7 @@ function rsc_library_node_settings($node = NULL) {
       '#multiple'      => FALSE,
       '#title'         => t('sources'),
       '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
-      '#default_value' => $settings['vocabs']['source'],
+      '#default_value' => isset($settings['vocabs']['source']) ? $settings['vocabs']['source'] : -1,
       '#options'       => $vocab_options,
     );
   
@@ -206,7 +198,7 @@ function rsc_library_node_settings($node = NULL) {
       '#multiple'      => FALSE,
       '#title'         => t('tags'),
       '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
-      '#default_value' => $settings['vocabs']['tag'],
+      '#default_value' => isset($settings['vocabs']['tag']) ? $settings['vocabs']['tag'] : -1,
       '#options'       => $vocab_options,
     );
   
@@ -216,7 +208,7 @@ function rsc_library_node_settings($node = NULL) {
       '#multiple'      => FALSE,
       '#title'         => t('"difficulty" levels'),
       '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
-      '#default_value' => $settings['vocabs']['difficulty'],
+      '#default_value' => isset($settings['vocabs']['difficulty']) ? $settings['vocabs']['difficulty'] : -1,
       '#options'       => $vocab_options,
     );
 
@@ -224,6 +216,13 @@ function rsc_library_node_settings($node = NULL) {
       '#type'   => 'markup',
       '#markup' => '<p>Remember to give the "RSC library staff" role permissions to add, edit and/or delete terms in these vocabularies.</p>'
     );
+
+//    $form['urls'] = array(
+//      '#type' => 'textarea',
+//      '#title' => t("Additionally show this library's blocks on"),
+//      '#default_value' => isset($settings['urls']) ? implode(PHP_EOL, $settings['urls']) : array(),
+//      '#description' => t("Normally, library blocks such as 'featured nodes' and 'new nodes' are only displayed on the library front page, category pages, and node pages that belong to the library. Here, you can specify additional paths which should be considered part of the library. Enter one path per line. The '*' character is a wildcard."),
+//    );
   
     $form['actions'] = array(
       '#type'              => 'radios',
@@ -240,7 +239,7 @@ function rsc_library_node_settings($node = NULL) {
     $form['#submit'] = 'rsc_library_node_settings_submit';
     
   } else {
-    $form['#markup'] = "<p>Save the library and edit it again to see more options ...</p><p><small>This is because the library node needs and 'nid' before we can save the relevant variables.</small></p>";
+    $form['#markup'] = "<p>Save the library and edit it again to see more options ...</p><p><small>This is because the library node needs a 'nid' before we can save the relevant variables.</small></p>";
   }
   
   return $form;
@@ -252,9 +251,12 @@ function rsc_library_node_settings($node = NULL) {
  * Submit handler for the node settings page
  */
 function rsc_library_node_settings_submit($form, &$form_state) {
-  
+
+  $values = &$form_state['values']['rsc_library_node_settings'];
+
+  /* Handle actions */
+
   $title = $form_state['values']['title'];
-  $values = $form_state['values']['rsc_library_node_settings'];
   $nid = $form_state['values']['nid'];
   if (is_numeric($nid) && is_array($values) && isset($values['vocabs'])) {
     variable_set("rsc_library_{$nid}",$values);
@@ -296,5 +298,6 @@ function rsc_library_node_settings_submit($form, &$form_state) {
         break;
     }
   }
+
 }
 
