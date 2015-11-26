@@ -103,25 +103,31 @@ function rsc_library_node_delete($node) {
  * Implements hook_entity_view($entity, $type, $view_mode, $langcode).
  *
  * Calculate breadcrumbs for the current entity page
+ * Set the Library ID global variable (influences block display, etc.)
  */
 function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
+
   if (('node' == $type) && ('rsc_library' == $entity->type) && ('full' == $view_mode)) {
-    
+
+    // A library front page is being viewed. The node id is the library id.
     $GLOBALS['rsc_library']['lid'] = $entity->nid;
     
   } else if (('taxonomy_term' == $type) && ('full' == $view_mode) && (!empty($entity->field_library_id))) {
 
+    // A taxonomy term is being viewed. Get the library id from a field attached to the vocabulary.
     $lid = field_get_items($type, $entity, 'field_library_id');
     $lid = array_shift($lid);
     $GLOBALS['rsc_library']['lid'] = $lid['value'];
     
   } else {
+
     $content_types = array(
       'rsc_library_article',
       'rsc_library_audio',
     );
-    
+
     if ($view_mode == 'full' && empty($GLOBALS['rsc_library']['breadcrumb_set'])) {
+
       // this is a full page entity and the breadcrumbs have not yet been set
       $breadcrumbs = array();
       $lid = NULL;
