@@ -241,8 +241,10 @@ function rsc_library_block_view_feat_cat($lid) {
 
     if (isset($result['taxonomy_term'])) {
       foreach($result['taxonomy_term'] as $result) {
+        /** @var stdClass|bool $term Taxonomy object or FALSE */
         $term = taxonomy_term_load($result->tid);
-        $items[$term->tid] = l($term->name,"taxonomy/term/{$term->tid}");
+        if ($term)
+          $items[$term->tid] = l($term->name,"taxonomy/term/{$term->tid}");
       }
     }
 
@@ -283,6 +285,7 @@ function rsc_library_block_view_feat_cat($lid) {
 
 /**
  * Implements hook_node_update().
+ * @param stdClass $node The node that is being saved
  */
 function rsc_library_node_update($node) {
 
