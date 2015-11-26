@@ -216,23 +216,24 @@ function rsc_library_entity_info_alter(&$entity_info) {
 
 
 /**
- * Takes a string and shortens it by removing stopwords.
+ * Takes a string and shortens it by removing English stopwords.
+ * TODO: make this configurable for multiple languages
  */
 function rsc_library_shorten($str) {
   static $stopwords = array('a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in', 'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the', 'this', 'that', 'to', 'up', 'via', 'with');
   $words = explode(' ', $str);
-  $ef; // ellips flag
+  $ellipse_flag = FALSE;
 
   foreach ($words as $key => $word) {
-    if (in_array($word,$stopwords)) {
-      if ($ef) {
+    if (in_array($word, $stopwords)) {
+      if ($ellipse_flag) {
         unset($words[$key]);
       } else {
         $words[$key] = '…';
-        $ef = true;
+        $ellipse_flag = TRUE;
       }
     } else {
-      $ef = false;
+      $ellipse_flag = FALSE;
     }
   }
   $str = implode(' ',$words);
