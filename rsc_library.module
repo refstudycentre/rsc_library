@@ -165,9 +165,15 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
                   $uri = taxonomy_term_uri($parent);
                   $breadcrumbs[] = l(rsc_library_shorten($parent->name), $uri['path'], array('attributes'=>array('title'=>$parent->name)));
                 }
-    
+
+                // Get the title of the library
+                $library_title = db_query("select title from node where nid=:nid", array(
+                  ':nid' => $lid,
+                ))->fetchCol(0)[0];
+
                 // Add the library homepage to the head of the breadcrumb
-                $breadcrumbs[] = l($entity->title,"node/{$entity->nid}");
+                $breadcrumbs[] = l($library_title, "node/{$lid}");
+
                 $breadcrumbs = array_reverse($breadcrumbs);
               }
             }
