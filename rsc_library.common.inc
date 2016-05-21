@@ -38,12 +38,12 @@ define('RSC_LIBRARY_PREFIX', 'rscl');
 // Fields defined by this module, that do not change based on user settings:
 define('RSC_LIBRARY_FIELDS_STATIC', array(
   RSC_LIBRARY_PREFIX.'_body' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_body',
     'type'        => 'text_long',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_attachment' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_attachment',
     'type'        => 'file',
     'cardinality' => 1,
     'settings'    => array(
@@ -51,47 +51,47 @@ define('RSC_LIBRARY_FIELDS_STATIC', array(
     ),
   ),
   RSC_LIBRARY_PREFIX.'_pages' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_pages',
     'type'        => 'number_integer',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_weight' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_weight',
     'type'        => 'number_integer',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_format' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_format',
     'type'        => 'list_text',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_editor' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_editor',
     'type'        => 'text',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_code' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_code',
     'type'        => 'text',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_publisher' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_publisher',
     'type'        => 'text',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_link' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_link',
     'type'        => 'text',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_date' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_date',
     'type'        => 'text',
     'cardinality' => 1,
   ),
   RSC_LIBRARY_PREFIX.'_featured' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_featured',
     'type'        => 'list_boolean',
     'cardinality' => 1,
     'settings'    => array(
@@ -102,7 +102,7 @@ define('RSC_LIBRARY_FIELDS_STATIC', array(
     ),
   ),
   RSC_LIBRARY_PREFIX.'_sort_enabled' => array(
-    'field_name'  => $fieldname,
+    'field_name'  => RSC_LIBRARY_PREFIX.'_sort_enabled',
     'type'        => 'list_boolean',
     'cardinality' => 1,
     'settings'    => array(
