@@ -174,19 +174,9 @@ function rsc_library_field_config($lid = NULL) {
     }
   }
 
-  /* Create taxonomy reference fields: */
-
-  // for each library
+  // Create taxonomy reference fields on each library:
   foreach($lids as $lid) {
-
-    // get the vocabulary settings for this library
-    $settings = variable_get("rsc_library_{$lid}", NULL);
-    if (empty($settings)) {
-      drupal_set_message(t('Could not create fields for library @lid, because its vocabulary settings have not been configured yet.', array('@lid' => $lid)), 'warning');
-    } else {
-      rsc_library_create_taxonomy_fields($settings);
-    }
-
+    rsc_library_create_taxonomy_fields($lid);
   }
 
 }
@@ -195,7 +185,7 @@ function rsc_library_field_config($lid = NULL) {
 /**
  * Create "taxonomy term reference" fields on a specific library
  */
-function rsc_library_create_taxonomy_fields($library_settings) {
+function rsc_library_create_taxonomy_fields($lid) {
 
   // cardinality settings for the taxonomy fields added below
   static $cardinality = array(
@@ -205,6 +195,13 @@ function rsc_library_create_taxonomy_fields($library_settings) {
     'difficulty' => 1,
     'source'     => 1,
   );
+
+  // get the vocabulary settings for this library
+  $library_settings = variable_get("rsc_library_{$lid}", NULL);
+  if (empty($settings)) {
+    drupal_set_message(t('Could not create fields for library @lid, because its vocabulary settings have not been configured yet.', array('@lid' => $lid)), 'warning');
+    return;
+  }
 
   // get a list of existing fields, so that we don't add duplicates:
   $field_names = array_keys(field_info_fields());
