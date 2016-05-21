@@ -31,7 +31,7 @@ function rsc_library_install() {
   }
 
   // Assign the necessary permissions to library staff
-  user_role_change_permissions($role->rid, array(
+  $permissions = array(
     'access content overview' => true,
     'access content' => true,
     'view own unpublished content' => true,
@@ -39,17 +39,15 @@ function rsc_library_install() {
     'revert revisions' => true,
     'delete revisions' => true,
     'view the administration theme' => true,
-    'create rsc_library_article content' => true,
-    'edit own rsc_library_article content' => true,
-    'edit any rsc_library_article content' => true,
-    'delete own rsc_library_article content' => true,
-    'delete any rsc_library_article content' => true,
-    'create rsc_library_audio content' => true,
-    'edit own rsc_library_audio content' => true,
-    'edit any rsc_library_audio content' => true,
-    'delete own rsc_library_audio content' => true,
-    'delete any rsc_library_audio content' => true,
-  ));
+  );
+  foreach (RSC_LIBRARY_CONTENT_TYPES as $type) {
+    $permissions["create ${type} content"] = true;
+    $permissions["edit own ${type} content"] = true;
+    $permissions["edit any ${type} content"] = true;
+    $permissions["delete own ${type} content"] = true;
+    $permissions["delete any ${type} content"] = true;
+  }
+  user_role_change_permissions($role->rid, $permissions);
   
 }
 

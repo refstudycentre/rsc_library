@@ -1,6 +1,6 @@
 <?php
 
-include "rsc_library.blocks.inc";
+require_once "rsc_library.blocks.inc";
 
 
 /**
@@ -40,19 +40,10 @@ function rsc_library_menu() {
  * Defines the content types used by rsc_library
  */
 function rsc_library_node_info() {
-  return array(
-    'rsc_library_article' => array(
-      'name'        => t('RSC Library: Article'),
-      'base'        => 'rsc_library_article',
-      'description' => t("Library article with author, attachment, etc."),
-      'locked'      => TRUE,  // admin cannot change machine name
-    ),
-    'rsc_library_audio' => array(
-      'name'        => t('RSC Library: Audio'),
-      'base'        => 'rsc_library_audio',
-      'description' => t("Audio with author, attachment, etc."),
-      'locked'      => TRUE,  // admin cannot change machine name
-    ),
+
+  module_load_include('inc','rsc_library','rsc_library.common');
+
+  return RSC_LIBRARY_CONTENT_TYPES_INFO + array(
     'rsc_library' => array(
       'name'        => t('RSC Library'),
       'base'        => 'rsc_library',
@@ -60,6 +51,7 @@ function rsc_library_node_info() {
       'locked'      => TRUE,  // admin cannot change machine name
     ),
   );
+
 }
 
 
@@ -94,7 +86,7 @@ function rsc_library_node_delete($node) {
   if ('rsc_library' == $node->type) {    
     // clean up library variables
     variable_del("rsc_library_{$node->nid}");
-    // TODO: how to find and delete the correct rscl_category_* variable? Search by value?
+    // TODO: how to find and delete the correct RSC_LIBRARY_PREFIX_category_* variable? Search by value?
   }
 }
 
@@ -140,7 +132,7 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
     
             // determine the current library
             foreach($entity as $key => $val) {
-              if (substr($key, 0, 14) === 'rscl_category_' && field_get_items('node',$entity,$key)) { // if the node is listed under a specific library's categories
+              if (substr($key, 0, 14) === RSC_LIBRARY_PREFIX.'_category_' && field_get_items('node',$entity,$key)) { // if the node is listed under a specific library's categories
                 $lid = variable_get($key,NULL);
                 if ($lid != NULL) {
                   $category_field_name = $key;
@@ -183,7 +175,7 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
         case 'taxonomy_term':
     
           // determine the current library
-          $lid = variable_get("rscl_category_{$entity->vocabulary_machine_name}", NULL);
+          $lid = variable_get(RSC_LIBRARY_PREFIX."_category_{$entity->vocabulary_machine_name}", NULL);
     
           if ($lid != NULL) {
     
@@ -220,7 +212,7 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
  * Implements hook_entity_info_alter().
  */
 function rsc_library_entity_info_alter(&$entity_info) {
-  $entity_info['node']['view modes']['rscl_block'] = array(
+  $entity_info['node']['view modes'][RSC_LIBRARY_PREFIX.'_block'] = array(
     'label' => t('RSC Library block listing'),
     'custom settings' => TRUE,
   );

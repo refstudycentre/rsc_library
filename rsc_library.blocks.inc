@@ -97,12 +97,12 @@ function rsc_library_block_view_feat_node($lid) {
 
         // determine the library to which this node belongs
         foreach($node as $key => $val) {
-          if (substr($key, 0, 14) === 'rscl_category_' && field_get_items('node',$node,$key)) { // if the node is listed under a specific library's categories
+          if (substr($key, 0, 14) === RSC_LIBRARY_PREFIX.'_category_' && field_get_items('node',$node,$key)) { // if the node is listed under a specific library's categories
             $node_lid = variable_get($key,NULL);
 
             // group nodes by lid
             // $items[$node_lid][$node->nid] = l($node->title,"node/{$node->nid}"); // TODO: make this configurable: simple link vs. rendered content
-            $renderable_node = node_view($node,'rscl_block');
+            $renderable_node = node_view($node, RSC_LIBRARY_PREFIX.'_block');
             $items[$node_lid][$node->nid] = render($renderable_node);
           }
         }
@@ -176,12 +176,12 @@ function rsc_library_block_view_new_node($lid) {
 
         // determine the library to which this node belongs
         foreach($node as $key => $val) {
-          if (substr($key, 0, 14) === 'rscl_category_' && field_get_items('node',$node,$key)) { // if the node is listed under a specific library's categories
+          if (substr($key, 0, 14) === RSC_LIBRARY_PREFIX.'_category_' && field_get_items('node',$node,$key)) { // if the node is listed under a specific library's categories
             $node_lid = variable_get($key,NULL);
 
             // group nodes by lid
             $items[$node_lid][$node->nid] = l($node->title,"node/{$node->nid}"); // TODO: make this configurable: simple link vs. rendered content
-            // $items[$node_lid][$node->nid] = render(node_view($node,'rscl_block'));
+            // $items[$node_lid][$node->nid] = render(node_view($node, RSC_LIBRARY_PREFIX.'_block'));
           }
         }
       }
@@ -221,7 +221,6 @@ function rsc_library_block_view_new_node($lid) {
  */
 function rsc_library_block_view_feat_cat($lid) {
 
-  $prefix = 'rscl';
   $block = array();
 
   $items = cache_get("rsc_library_feat_cats_{$lid}");
@@ -235,7 +234,7 @@ function rsc_library_block_view_feat_cat($lid) {
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'taxonomy_term')
       ->propertyCondition('vid', $vid)
-      ->fieldCondition("{$prefix}_featured",'value',1,'=')
+      ->fieldCondition(RSC_LIBRARY_PREFIX.'_featured', 'value', 1, '=')
       ->addMetaData('account', user_load(1)); // Run the query as user 1 (TODO: remove once access checks are implemented)
     $result = $query->execute();
 

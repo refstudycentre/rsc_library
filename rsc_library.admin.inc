@@ -262,7 +262,7 @@ function rsc_library_node_settings_submit($form, &$form_state) {
     variable_set("rsc_library_{$nid}",$values);
     $cat_vocab = taxonomy_vocabulary_load($values['vocabs']['category']);
     if (!empty($cat_vocab->machine_name)) {
-      variable_set("rscl_category_{$cat_vocab->machine_name}",$nid);
+      variable_set(RSC_LIBRARY_PREFIX."_category_{$cat_vocab->machine_name}",$nid);
     }
   
     switch($values['actions']) {

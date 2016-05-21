@@ -1,34 +1,67 @@
 <?php
 
+/*
+ * The rsc_library module defines these content types in addition to the rsc_library type.
+ * See rsc_library_node_info().
+ */
+define('RSC_LIBRARY_CONTENT_TYPES_INFO', array(
+  'rsc_library_article' => array(
+    'name'        => t('Library content'),
+    'base'        => 'rsc_library_article',
+    'description' => t("Own content, whether text, audio, video, or combination of those."),
+    'locked'      => TRUE,  // admin cannot change machine name
+  ),
+  'rsc_library_link' => array(
+    'name'        => t('External content'),
+    'base'        => 'rsc_library_link',
+    'description' => t("Link to content hosted elsewhere."),
+    'locked'      => TRUE,  // admin cannot change machine name
+  ),
+  'rsc_library_request' => array(
+    'name'        => t('Request-able content'),  // TODO: get a better name for this? "Requests"?
+    'base'        => 'rsc_library_request',
+    'description' => t("Content that may be requested via email"),
+    'locked'      => TRUE,  // admin cannot change machine name
+  ),
+  'rsc_library_book_preview' => array(
+    'name'        => t('Book preview'),
+    'base'        => 'rsc_library_book',
+    'description' => t("A book, usually for sale, of which we host the first chapter"),
+    'locked'      => TRUE,  // admin cannot change machine name
+  ),
+));
+define('RSC_LIBRARY_CONTENT_TYPES', array_keys(RSC_LIBRARY_CONTENT_TYPES_INFO));
+
+// Field names are limited to 32 characters, so we use a short prefix:
+define('RSC_LIBRARY_PREFIX', 'rscl');
 
 /**
  * (re)set content type settings
  */
-function rsc_library_content_type_settings($content_types = array()) {
-  
-  if (!is_array($content_types) || empty($content_types)) {
-    $content_types = array(
-      'rsc_library_article',
-      'rsc_library_audio',
-    );
-  }
+function rsc_library_content_type_settings($content_types = RSC_LIBRARY_CONTENT_TYPES) {
+
+  // for each "rsc_library_*" content type
   foreach ($content_types as $type) {
     // settings from the content type manage page
-    variable_set("node_preview_{$type}", 1);                  // Optional preview
+    variable_set("node_preview_{$type}", 1);                 // Optional preview
     variable_set("node_options_{$type}", array());           // default unpublished
-    variable_set("node_submitted_{$type}", 0);                // Unset 'Display author and date information'.
-    variable_set("comment_{$type}", COMMENT_NODE_OPEN);       // open comments
+    variable_set("node_submitted_{$type}", 0);               // Unset 'Display author and date information'.
+    variable_set("comment_{$type}", COMMENT_NODE_OPEN);      // open comments
     variable_set("menu_options_{$type}", array());           // no available menus
   }
-  variable_set("node_preview_rsc_library", 1);                  // Optional preview
-  variable_set("node_options_rsc_library", array());           // default unpublished
-  variable_set("node_submitted_rsc_library", 0);                // Unset 'Display author and date information'.
-  variable_set("comment_rsc_library", COMMENT_NODE_CLOSED);     // open comments
-  variable_set("menu_options_rsc_library", array());           // no available menus
+
+  // for the "rsc_library" content type
+  variable_set("node_preview_rsc_library", 1);               // Optional preview
+  variable_set("node_options_rsc_library", array());         // default unpublished
+  variable_set("node_submitted_rsc_library", 0);             // Unset 'Display author and date information'.
+  variable_set("comment_rsc_library", COMMENT_NODE_CLOSED);  // close comments
+  variable_set("menu_options_rsc_library", array());         // no available menus
   
   // pathauto settings
   variable_set("pathauto_node_rsc_library_article_pattern", 'article/[node:title]');
-  variable_set("pathauto_node_rsc_library_audio_pattern", 'audio/[node:title]');
+  variable_set("pathauto_node_rsc_library_link_pattern", 'link/[node:title]');
+  variable_set("pathauto_node_rsc_library_request_pattern", 'request/[node:title]');
+  variable_set("pathauto_node_rsc_library_book_pattern", 'book-chapter/[node:title]');
   
 }
 
@@ -51,10 +84,10 @@ function rsc_library_field_config($lid = NULL) {
   node_add_body_field(node_type_get_type('rsc_library'));
 
   $fieldnames = array_keys(field_info_fields());
-  $prefix = 'rscl'; // using this stupid prefix because of the 32 char limit on field names. Stands for RSC Library
+
 
   // body text
-  $fieldname = "{$prefix}_body";
+  $fieldname = RSC_LIBRARY_PREFIX.'_body';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -64,7 +97,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // attachment
-  $fieldname = "{$prefix}_attachment";
+  $fieldname = RSC_LIBRARY_PREFIX.'_attachment';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -77,7 +110,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // pages
-  $fieldname = "{$prefix}_pages";
+  $fieldname = RSC_LIBRARY_PREFIX.'_pages';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -87,7 +120,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // weight
-  $fieldname = "{$prefix}_weight";
+  $fieldname = RSC_LIBRARY_PREFIX.'_weight';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -97,7 +130,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // format
-  $fieldname = "{$prefix}_format";
+  $fieldname = RSC_LIBRARY_PREFIX.'_format';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -107,7 +140,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // editor
-  $fieldname = "{$prefix}_editor";
+  $fieldname = RSC_LIBRARY_PREFIX.'_editor';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -117,7 +150,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // code
-  $fieldname = "{$prefix}_code";
+  $fieldname = RSC_LIBRARY_PREFIX.'_code';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -127,7 +160,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // publisher
-  $fieldname = "{$prefix}_publisher";
+  $fieldname = RSC_LIBRARY_PREFIX.'_publisher';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -137,7 +170,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // link
-  $fieldname = "{$prefix}_link";
+  $fieldname = RSC_LIBRARY_PREFIX.'_link';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -147,7 +180,7 @@ function rsc_library_field_config($lid = NULL) {
   }
 
   // date
-  $fieldname = "{$prefix}_date";
+  $fieldname = RSC_LIBRARY_PREFIX.'_date';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -157,7 +190,7 @@ function rsc_library_field_config($lid = NULL) {
   }
   
   // featured
-  $fieldname = "{$prefix}_featured";
+  $fieldname = RSC_LIBRARY_PREFIX.'_featured';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -173,7 +206,7 @@ function rsc_library_field_config($lid = NULL) {
   }
   
   // sort_enabled
-  $fieldname = "{$prefix}_sort_enabled";
+  $fieldname = RSC_LIBRARY_PREFIX.'_sort_enabled';
   if (!in_array($fieldname,$fieldnames)) {
     field_create_field(array(
       'field_name'  => $fieldname,
@@ -205,7 +238,7 @@ function rsc_library_field_config($lid = NULL) {
       foreach($settings['vocabs'] as $field => $vid) {             // for each taxonomy reference field
         if ($vid > 0) {                                             // if a vocabulary has been configured
           $vocab = taxonomy_vocabulary_load($vid);
-          $fieldname = "{$prefix}_{$field}_{$vocab->machine_name}"; // determine what this field should be called
+          $fieldname = RSC_LIBRARY_PREFIX."_{$field}_{$vocab->machine_name}"; // determine what this field should be called
           if (strlen($fieldname) <= 32) {
             if (!in_array($fieldname, $fieldnames)) {               // create it if it doesn't exist yet
               field_create_field(array(
@@ -240,7 +273,6 @@ function rsc_library_field_config($lid = NULL) {
  */
 function rsc_library_field_instance_config($lid = NULL) {
   $t = get_t(); // this function might run during install, or any other time
-  $prefix = "rscl";
   $fields = array_keys(field_info_fields());
   
   $lids = array();
@@ -254,7 +286,7 @@ function rsc_library_field_instance_config($lid = NULL) {
   
   $instances_audio = array_keys(field_info_instances('node','rsc_library_audio'));
   
-  $fieldname = "{$prefix}_body";
+  $fieldname = RSC_LIBRARY_PREFIX.'_body';
   if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
     field_create_instance(array(
       'field_name'  => $fieldname,
@@ -272,7 +304,7 @@ function rsc_library_field_instance_config($lid = NULL) {
     $instances_audio[] = $fieldname;
   }
   
-  $fieldname = "{$prefix}_attachment";
+  $fieldname = RSC_LIBRARY_PREFIX.'_attachment';
   if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
     field_create_instance(array(
       'field_name'  => $fieldname,
@@ -293,7 +325,7 @@ function rsc_library_field_instance_config($lid = NULL) {
     $instances_audio[] = $fieldname;
   }
   
-  $fieldname = "{$prefix}_link";
+  $fieldname = RSC_LIBRARY_PREFIX.'_link';
   if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
     field_create_instance(array(
       'field_name'  => $fieldname,
@@ -318,7 +350,7 @@ function rsc_library_field_instance_config($lid = NULL) {
   );
   
   foreach ($fieldlabels as $fname => $label) {
-    $fieldname = "{$prefix}_{$fname}";
+    $fieldname = RSC_LIBRARY_PREFIX."_{$fname}";
     if (!in_array($fieldname, $instances_audio) && in_array($fieldname, $fields)) {
       field_create_instance(array(
         'field_name'  => $fieldname,
@@ -340,7 +372,7 @@ function rsc_library_field_instance_config($lid = NULL) {
   
   $instances_article = array_keys(field_info_instances('node','rsc_library_article'));
 
-  $fieldname = "{$prefix}_body";
+  $fieldname = RSC_LIBRARY_PREFIX.'_body';
   if (!in_array($fieldname, $instances_article) && in_array($fieldname, $fields)) {
     field_create_instance(array(
       'field_name'  => $fieldname,
@@ -358,7 +390,7 @@ function rsc_library_field_instance_config($lid = NULL) {
     $instances_article[] = $fieldname;
   }
 
-  $fieldname = "{$prefix}_attachment";
+  $fieldname = RSC_LIBRARY_PREFIX.'_attachment';
   if (!in_array($fieldname, $instances_article) && in_array($fieldname, $fields)) {
     field_create_instance(array(
       'field_name'  => $fieldname,
@@ -379,7 +411,7 @@ function rsc_library_field_instance_config($lid = NULL) {
     $instances_article[] = $fieldname;
   }
   
-  $fieldname = "{$prefix}_link";
+  $fieldname = RSC_LIBRARY_PREFIX.'_link';
   if (!in_array($fieldname, $instances_article) && in_array($fieldname, $fields)) {
     field_create_instance(array(
       'field_name'  => $fieldname,
@@ -409,7 +441,7 @@ function rsc_library_field_instance_config($lid = NULL) {
   );
 
   foreach ($fieldlabels as $fname => $label) {
-    $fieldname = "{$prefix}_{$fname}";
+    $fieldname = RSC_LIBRARY_PREFIX."_{$fname}";
     if (!in_array($fieldname, $instances_article) && in_array($fieldname, $fields)) {
       field_create_instance(array(
         'field_name'  => $fieldname,
@@ -465,7 +497,7 @@ function rsc_library_field_instance_config($lid = NULL) {
       foreach($settings['vocabs'] as $field => $vid) {             // for each taxonomy reference field
         if ($vid > 0) {                                             // if a vocabulary has been configured
           $vocab = taxonomy_vocabulary_load($vid);
-          $fieldname = "{$prefix}_{$field}_{$vocab->machine_name}"; // determine what this field is called
+          $fieldname = RSC_LIBRARY_PREFIX."_{$field}_{$vocab->machine_name}"; // determine what this field is called
           if (in_array($fieldname, $fields)) {                      // if the field exists
 
             // for articles
@@ -511,7 +543,7 @@ function rsc_library_field_instance_config($lid = NULL) {
       }
     
       // featured field instance for 'category' taxonomy terms
-      $fieldname = "{$prefix}_featured";
+      $fieldname = RSC_LIBRARY_PREFIX."_featured";
       if (!in_array($fieldname, $instances_cat) && in_array($fieldname, $fields)) { // create it if it doesn't exist yet
         field_create_instance(array(
           'field_name'  => $fieldname,
@@ -535,7 +567,7 @@ function rsc_library_field_instance_config($lid = NULL) {
       }
     
       // sort_enabled field instance for 'category' taxonomy terms
-      $fieldname = "{$prefix}_sort_enabled";
+      $fieldname = RSC_LIBRARY_PREFIX."_sort_enabled";
       if (!in_array($fieldname, $instances_cat) && in_array($fieldname, $fields)) { // create it if it doesn't exist yet
         field_create_instance(array(
           'field_name'  => $fieldname,
@@ -565,7 +597,7 @@ function rsc_library_field_instance_config($lid = NULL) {
 
 
 /**
- * Delete unused fields that start with rscl_
+ * Delete unused fields that start with RSC_LIBRARY_PREFIX_
  * Unused means: does not have any instances
  */
 function rsc_library_field_cleanup() {
@@ -573,8 +605,10 @@ function rsc_library_field_cleanup() {
   $used_fields = array_keys(field_info_field_map());
   $unused_fields = array_diff($fields,$used_fields);
 
+  $n = strlen(RSC_LIBRARY_PREFIX) + 1;
+
   foreach ($unused_fields as $field) {
-    if (substr($field,0,5) === 'rscl_') {
+    if (substr($field, 0, $n) === RSC_LIBRARY_PREFIX.'_') {
       field_delete_field($field);
     }
   }
