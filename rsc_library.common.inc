@@ -118,10 +118,10 @@ define('RSC_LIBRARY_FIELDS_STATIC', array(
 /**
  * (re)set content type settings
  */
-function rsc_library_content_type_settings($content_types = RSC_LIBRARY_CONTENT_TYPES) {
+function rsc_library_content_type_settings() {
 
   // for each "rsc_library_*" content type
-  foreach ($content_types as $type) {
+  foreach (RSC_LIBRARY_CONTENT_TYPES as $type) {
     // settings from the content type manage page
     variable_set("node_preview_{$type}", 1);                 // Optional preview
     variable_set("node_options_{$type}", array());           // default unpublished
