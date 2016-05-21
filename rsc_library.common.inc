@@ -35,6 +35,86 @@ define('RSC_LIBRARY_CONTENT_TYPES', array_keys(RSC_LIBRARY_CONTENT_TYPES_INFO));
 // Field names are limited to 32 characters, so we use a short prefix:
 define('RSC_LIBRARY_PREFIX', 'rscl');
 
+// Fields defined by this module, that do not change based on user settings:
+define('RSC_LIBRARY_FIELDS_STATIC', array(
+  RSC_LIBRARY_PREFIX.'_body' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'text_long',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_attachment' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'file',
+    'cardinality' => 1,
+    'settings'    => array(
+      'uri_scheme' => 'public',
+    ),
+  ),
+  RSC_LIBRARY_PREFIX.'_pages' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'number_integer',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_weight' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'number_integer',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_format' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'list_text',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_editor' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'text',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_code' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'text',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_publisher' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'text',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_link' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'text',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_date' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'text',
+    'cardinality' => 1,
+  ),
+  RSC_LIBRARY_PREFIX.'_featured' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'list_boolean',
+    'cardinality' => 1,
+    'settings'    => array(
+      'allowed_values' => array(
+        0 => '',
+        1 => '',
+      ),
+    ),
+  ),
+  RSC_LIBRARY_PREFIX.'_sort_enabled' => array(
+    'field_name'  => $fieldname,
+    'type'        => 'list_boolean',
+    'cardinality' => 1,
+    'settings'    => array(
+      'allowed_values' => array(
+        0 => '',
+        1 => '',
+      ),
+    ),
+  ),
+));
+
+
 /**
  * (re)set content type settings
  */
@@ -72,7 +152,8 @@ function rsc_library_content_type_settings($content_types = RSC_LIBRARY_CONTENT_
  * Workaround: submit form once for setting vocabs, second time for creating fields
  */
 function rsc_library_field_config($lid = NULL) {
-  
+
+  // Get a list of library IDs for which to configure the fields
   $lids = array();
   if ($lid == NULL) {
     $lids = rsc_library_get_lids();
@@ -83,186 +164,86 @@ function rsc_library_field_config($lid = NULL) {
   // body text with summary for library front page
   node_add_body_field(node_type_get_type('rsc_library'));
 
-  $fieldnames = array_keys(field_info_fields());
+  // get a list of existing fields, so that we don't add duplicates:
+  $field_names = array_keys(field_info_fields());
 
-
-  // body text
-  $fieldname = RSC_LIBRARY_PREFIX.'_body';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'text_long',
-      'cardinality' => 1,
-    ));
+  // add fields that do not change based on user settings:
+  foreach (RSC_LIBRARY_FIELDS_STATIC as $field_name => $field_info) {
+    if (!in_array($field_name, $field_names)) {
+      field_create_field($field_info);
+    }
   }
 
-  // attachment
-  $fieldname = RSC_LIBRARY_PREFIX.'_attachment';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'file',
-      'cardinality' => 1,
-      'settings'    => array(
-        'uri_scheme' => 'public',
-      ),
-    ));
+  /* Create taxonomy reference fields: */
+
+  // for each library
+  foreach($lids as $lid) {
+
+    // get the vocabulary settings for this library
+    $settings = variable_get("rsc_library_{$lid}", NULL);
+    if (empty($settings)) {
+      drupal_set_message(t('Could not create fields for library @lid, because its vocabulary settings have not been configured yet.', array('@lid' => $lid)), 'warning');
+    } else {
+      rsc_library_create_taxonomy_fields($settings);
+    }
+
   }
 
-  // pages
-  $fieldname = RSC_LIBRARY_PREFIX.'_pages';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'number_integer',
-      'cardinality' => 1,
-    ));
-  }
+}
 
-  // weight
-  $fieldname = RSC_LIBRARY_PREFIX.'_weight';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'number_integer',
-      'cardinality' => 1,
-    ));
-  }
 
-  // format
-  $fieldname = RSC_LIBRARY_PREFIX.'_format';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'list_text',
-      'cardinality' => 1,
-    ));
-  }
+/**
+ * Create "taxonomy term reference" fields on a specific library
+ */
+function rsc_library_create_taxonomy_fields($library_settings) {
 
-  // editor
-  $fieldname = RSC_LIBRARY_PREFIX.'_editor';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'text',
-      'cardinality' => 1,
-    ));
-  }
-
-  // code
-  $fieldname = RSC_LIBRARY_PREFIX.'_code';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'text',
-      'cardinality' => 1,
-    ));
-  }
-
-  // publisher
-  $fieldname = RSC_LIBRARY_PREFIX.'_publisher';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'text',
-      'cardinality' => 1,
-    ));
-  }
-
-  // link
-  $fieldname = RSC_LIBRARY_PREFIX.'_link';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'text',
-      'cardinality' => 1,
-    ));
-  }
-
-  // date
-  $fieldname = RSC_LIBRARY_PREFIX.'_date';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'text',
-      'cardinality' => 1,
-    ));
-  }
-  
-  // featured
-  $fieldname = RSC_LIBRARY_PREFIX.'_featured';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'list_boolean',
-      'cardinality' => 1,
-      'settings'    => array(
-        'allowed_values' => array(
-          0 => '',
-          1 => '',
-        ),
-      ),
-    ));
-  }
-  
-  // sort_enabled
-  $fieldname = RSC_LIBRARY_PREFIX.'_sort_enabled';
-  if (!in_array($fieldname,$fieldnames)) {
-    field_create_field(array(
-      'field_name'  => $fieldname,
-      'type'        => 'list_boolean',
-      'cardinality' => 1,
-      'settings'    => array(
-        'allowed_values' => array(
-          0 => '',
-          1 => '',
-        ),
-      ),
-    ));
-  }
-
-  // values reused in the foreach below
-  $cardinality = array(
+  // cardinality settings for the taxonomy fields added below
+  static $cardinality = array(
     'author'     => FIELD_CARDINALITY_UNLIMITED,
     'tag'        => FIELD_CARDINALITY_UNLIMITED,
     'category'   => FIELD_CARDINALITY_UNLIMITED,
     'difficulty' => 1,
     'source'     => 1,
   );
-  
-  foreach($lids as $lid) {                                         // for each library
-    $settings = variable_get("rsc_library_{$lid}",NULL);
-    if (!empty($settings)) {
-    
-      // taxonomy reference fields
-      foreach($settings['vocabs'] as $field => $vid) {             // for each taxonomy reference field
-        if ($vid > 0) {                                             // if a vocabulary has been configured
-          $vocab = taxonomy_vocabulary_load($vid);
-          $fieldname = RSC_LIBRARY_PREFIX."_{$field}_{$vocab->machine_name}"; // determine what this field should be called
-          if (strlen($fieldname) <= 32) {
-            if (!in_array($fieldname, $fieldnames)) {               // create it if it doesn't exist yet
-              field_create_field(array(
-                'field_name'  => $fieldname,
-                'type'        => 'taxonomy_term_reference',
-                'cardinality' => $cardinality[$field],
-                'settings'    => array(
-                  'allowed_values' => array(
-                    array(
-                      'vocabulary' => $vocab->machine_name,
-                      'parent'     => '0',
-                    ),
-                  ),
-                ),
-              ));
-              $fieldnames[] = $fieldname; // add field to list of names to prevent duplicate creation attempts
-            }
-          } else {
-            drupal_set_message(t('Cannot create field @fieldname (more than 32 characters).', array('@fieldname' => $fieldname)),'error');
-          }
-        }
+
+  // get a list of existing fields, so that we don't add duplicates:
+  $field_names = array_keys(field_info_fields());
+
+  // for each taxonomy reference field
+  foreach ($library_settings['vocabs'] as $field => $vid) {
+
+    // if a vocabulary has been configured
+    if ($vid > 0) {
+
+      // load the vocabulary info
+      $vocab = taxonomy_vocabulary_load($vid);
+
+      // determine what this field should be called
+      $field_name = RSC_LIBRARY_PREFIX . "_{$field}_{$vocab->machine_name}";
+      if (strlen($field_name) > 32) {
+        drupal_set_message(t('Cannot create field @fieldname (more than 32 characters).', array('@fieldname' => $field_name)), 'error');
+        continue;
       }
-    } else {
-      drupal_set_message(t('Could not create fields for library @lid, because its vocabulary settings have not been configured yet.', array('@lid' => $lid)), 'error');
+
+      // create it if it doesn't exist yet
+      if (!in_array($field_name, $field_names)) {
+        field_create_field(array(
+          'field_name' => $field_name,
+          'type' => 'taxonomy_term_reference',
+          'cardinality' => $cardinality[$field],
+          'settings' => array(
+            'allowed_values' => array(
+              array(
+                'vocabulary' => $vocab->machine_name,
+                'parent' => '0',
+              ),
+            ),
+          ),
+        ));
+
+        // add field name to list to prevent duplicate creation attempts
+        $field_names[] = $field_name;
+      }
     }
   }
 }
