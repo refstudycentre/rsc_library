@@ -12,5 +12,6 @@ dependencies[] = number
 dependencies[] = list
 dependencies[] = shs
 dependencies[] = pathauto
+dependencies[] = image
 
 configure = admin/structure/rsc_library

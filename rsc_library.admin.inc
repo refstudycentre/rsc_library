@@ -15,7 +15,7 @@ function rsc_library_settings() {
   }
   
   /* collect info from this module */
-  $default_settings = array();
+//  $default_settings = array();
   //$settings = variable_get('rsc_library',$default_settings);
   
   /* build the form */
@@ -179,6 +179,16 @@ function rsc_library_node_settings($node = NULL) {
       '#title'         => t('authors'),
       '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
       '#default_value' => isset($settings['vocabs']['author']) ? $settings['vocabs']['author'] : -1,
+      '#options'       => $vocab_options,
+    );
+
+    $form['vocabs']['editor'] = array(
+      '#type'          => 'select',
+      '#required'      => FALSE,
+      '#multiple'      => FALSE,
+      '#title'         => t('editors'),
+      '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
+      '#default_value' => isset($settings['vocabs']['editor']) ? $settings['vocabs']['editor'] : -1,
       '#options'       => $vocab_options,
     );
   

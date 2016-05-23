@@ -17,17 +17,17 @@ function rsc_library_install() {
    * Set up the role and permissions for library staff
    */
 
-  $rolename = 'rsc library staff';
+  $role_name = 'rsc library staff';
 
   // Try to load the role to see if it exists
-  $role = user_role_load_by_name($rolename);
+  $role = user_role_load_by_name($role_name);
   if (!$role) {
     // create it, since it does not exist
     $role = new stdClass();
-    $role->name = $rolename;
+    $role->name = $role_name;
     user_role_save($role);
     // load the newly created role, to get the rid
-    $role = user_role_load_by_name($rolename);
+    $role = user_role_load_by_name($role_name);
   }
 
   // Assign the necessary permissions to library staff
