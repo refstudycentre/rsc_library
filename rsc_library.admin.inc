@@ -84,15 +84,15 @@ function rsc_library_settings_submit($form, &$form_state) {
       case 'fields_cleanup':
         
         module_load_include('inc','rsc_library','rsc_library.common');
-        rsc_library_field_cleanup();
+        rsc_library_field__cleanup();
         drupal_set_message("Unused fields from rsc_library have been deleted.");
         
         break;
       case 'fields_create':
         
         module_load_include('inc','rsc_library','rsc_library.common');
-        rsc_library_field_config();
-        rsc_library_field_instance_config();
+        rsc_library_field__setup_fields();
+        rsc_library_field__setup_field_instances();
         drupal_set_message("Fields and instances for rsc_library have been created.");
         
         break;
