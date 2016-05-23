@@ -543,7 +543,7 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['weight'],
       $field_instances_on_nodes['featured_image'],
     ),
-    'rsc_library_book' => array(
+    'rsc_library_book_preview' => array(
       $field_instances_on_nodes['summary'],
       $field_instances_on_nodes['code'],
       $field_instances_on_nodes['book_title'],
@@ -729,7 +729,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       $taxonomy_reference_field_instances['category'],
       $taxonomy_reference_field_instances['difficulty'],
     ),
-    'rsc_library_book' => array(
+    'rsc_library_book_preview' => array(
       $taxonomy_reference_field_instances['author'],
       $taxonomy_reference_field_instances['editor'],
       $taxonomy_reference_field_instances['tag'],

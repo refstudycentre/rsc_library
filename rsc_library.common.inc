@@ -29,7 +29,7 @@ function rsc_library_content_types_info() {
     ),
     'rsc_library_book_preview' => array(
       'name'        => t('Book preview'),
-      'base'        => 'rsc_library_book',
+      'base'        => 'rsc_library_book_preview',
       'description' => t("A book, usually for sale, of which we host the first chapter"),
       'locked'      => TRUE,  // admin cannot change machine name
     ),
@@ -73,7 +73,7 @@ function rsc_library_content_type_settings() {
   variable_set("pathauto_node_rsc_library_article_pattern", 'article/[node:title]');
   variable_set("pathauto_node_rsc_library_link_pattern", 'link/[node:title]');
   variable_set("pathauto_node_rsc_library_request_pattern", 'request/[node:title]');
-  variable_set("pathauto_node_rsc_library_book_pattern", 'book-preview/[node:title]');
+  variable_set("pathauto_node_rsc_library_book_preview_pattern", 'book-preview/[node:title]');
   
 }
 

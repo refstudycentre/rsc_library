@@ -66,6 +66,7 @@ function rsc_library_settings() {
   $form['#submit'][] = 'rsc_library_settings_submit';
 
   return system_settings_form($form);
+
 }
 
 

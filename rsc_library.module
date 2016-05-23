@@ -1,6 +1,7 @@
 <?php
 
 require_once "rsc_library.blocks.inc";
+require_once "rsc_library.common.inc";
 
 
 /**
@@ -41,8 +42,6 @@ function rsc_library_menu() {
  */
 function rsc_library_node_info() {
 
-  module_load_include('inc','rsc_library','rsc_library.common');
-
   return rsc_library_content_types_info() + array(
     'rsc_library' => array(
       'name'        => t('RSC Library'),
@@ -69,7 +68,7 @@ function rsc_library_link_form($node, &$form_state) {
 function rsc_library_request_form($node, &$form_state) {
   return node_content_form($node, $form_state);
 }
-function rsc_library_book_form($node, &$form_state) {
+function rsc_library_book_preview_form($node, &$form_state) {
   return node_content_form($node, $form_state);
 }
 function rsc_library_form($node, &$form_state) {
