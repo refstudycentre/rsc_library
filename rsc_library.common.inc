@@ -1,39 +1,40 @@
 <?php
 
-/*
- * The rsc_library module defines these content types in addition to the rsc_library type.
- * See rsc_library_node_info().
- */
-define('RSC_LIBRARY_CONTENT_TYPES_INFO', array(
-  'rsc_library_article' => array(
-    'name'        => t('Library content'),
-    'base'        => 'rsc_library_article',
-    'description' => t("Own content, whether text, audio, video, or combination of those."),
-    'locked'      => TRUE,  // admin cannot change machine name
-  ),
-  'rsc_library_link' => array(
-    'name'        => t('External content'),
-    'base'        => 'rsc_library_link',
-    'description' => t("Link to content hosted elsewhere."),
-    'locked'      => TRUE,  // admin cannot change machine name
-  ),
-  'rsc_library_request' => array(
-    'name'        => t('Request-able content'),  // TODO: get a better name for this? "Requests"?
-    'base'        => 'rsc_library_request',
-    'description' => t("Content that may be requested via email"),
-    'locked'      => TRUE,  // admin cannot change machine name
-  ),
-  'rsc_library_book_preview' => array(
-    'name'        => t('Book preview'),
-    'base'        => 'rsc_library_book',
-    'description' => t("A book, usually for sale, of which we host the first chapter"),
-    'locked'      => TRUE,  // admin cannot change machine name
-  ),
-));
-define('RSC_LIBRARY_CONTENT_TYPES', array_keys(RSC_LIBRARY_CONTENT_TYPES_INFO));
-
 // Field names are limited to 32 characters, so we use a short prefix:
 define('RSC_LIBRARY_PREFIX', 'rscl');
+
+
+/**
+ * Content types. Used by hook_node_info, among others.
+ */
+function rsc_library_content_types() {
+  return array(
+    'rsc_library_article' => array(
+      'name'        => t('Library content'),
+      'base'        => 'rsc_library_article',
+      'description' => t("Own content, whether text, audio, video, or combination of those."),
+      'locked'      => TRUE,  // admin cannot change machine name
+    ),
+    'rsc_library_link' => array(
+      'name'        => t('External content'),
+      'base'        => 'rsc_library_link',
+      'description' => t("Link to content hosted elsewhere."),
+      'locked'      => TRUE,  // admin cannot change machine name
+    ),
+    'rsc_library_request' => array(
+      'name'        => t('Request-able content'),  // TODO: get a better name for this? "Requests"?
+      'base'        => 'rsc_library_request',
+      'description' => t("Content that may be requested via email"),
+      'locked'      => TRUE,  // admin cannot change machine name
+    ),
+    'rsc_library_book_preview' => array(
+      'name'        => t('Book preview'),
+      'base'        => 'rsc_library_book',
+      'description' => t("A book, usually for sale, of which we host the first chapter"),
+      'locked'      => TRUE,  // admin cannot change machine name
+    ),
+  );
+}
 
 
 /**
@@ -42,7 +43,7 @@ define('RSC_LIBRARY_PREFIX', 'rscl');
 function rsc_library_content_type_settings() {
 
   // for each "rsc_library_*" content type
-  foreach (RSC_LIBRARY_CONTENT_TYPES as $type) {
+  foreach (array_keys(rsc_library_content_types()) as $type) {
     // settings from the content type manage page
     variable_set("node_preview_{$type}", 1);                 // Optional preview
     variable_set("node_options_{$type}", array());           // default unpublished

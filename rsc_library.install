@@ -40,7 +40,7 @@ function rsc_library_install() {
     'delete revisions' => true,
     'view the administration theme' => true,
   );
-  foreach (RSC_LIBRARY_CONTENT_TYPES as $type) {
+  foreach (array_keys(rsc_library_content_types()) as $type) {
     $permissions["create ${type} content"] = true;
     $permissions["edit own ${type} content"] = true;
     $permissions["edit any ${type} content"] = true;

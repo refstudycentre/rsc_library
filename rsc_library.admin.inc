@@ -1,5 +1,7 @@
 <?php
 
+require_once "rsc_library.common.inc";
+
 
 /**
  * Form builder for the module settings page
@@ -83,14 +85,14 @@ function rsc_library_settings_submit($form, &$form_state) {
         break;
       case 'fields_cleanup':
         
-        module_load_include('inc','rsc_library','rsc_library.common');
+        module_load_include('inc','rsc_library','rsc_library.field');
         rsc_library_field__cleanup();
         drupal_set_message("Unused fields from rsc_library have been deleted.");
         
         break;
       case 'fields_create':
         
-        module_load_include('inc','rsc_library','rsc_library.common');
+        module_load_include('inc','rsc_library','rsc_library.field');
         rsc_library_field__setup_fields();
         rsc_library_field__setup_field_instances();
         drupal_set_message("Fields and instances for rsc_library have been created.");
