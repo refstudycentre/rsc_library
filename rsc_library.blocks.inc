@@ -85,7 +85,7 @@ function rsc_library_block_view_feat_node($lid) {
     // get a list of links to all promoted nodes in the library:
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'node')
-      ->entityCondition('bundle', array('rsc_library_article','rsc_library_audio'), 'IN')
+      ->entityCondition('bundle', rsc_library_content_types(), 'IN')
       ->propertyCondition('status', 1)
       ->propertyCondition('promote', 1)
       ->addMetaData('account', user_load(1)); // Run the query as user 1 (TODO: remove once access checks are implemented)
@@ -163,7 +163,7 @@ function rsc_library_block_view_new_node($lid) {
     // get a list of links to all promoted nodes in the library:
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'node')
-      ->entityCondition('bundle', array('rsc_library_article','rsc_library_audio'), 'IN')
+      ->entityCondition('bundle', rsc_library_content_types(), 'IN')
       ->propertyCondition('status', 1)
       ->propertyOrderBy('created','DESC')
       ->range(0,5)

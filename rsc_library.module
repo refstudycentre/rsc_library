@@ -43,7 +43,7 @@ function rsc_library_node_info() {
 
   module_load_include('inc','rsc_library','rsc_library.common');
 
-  return rsc_library_content_types() + array(
+  return rsc_library_content_types_info() + array(
     'rsc_library' => array(
       'name'        => t('RSC Library'),
       'base'        => 'rsc_library',
@@ -63,7 +63,13 @@ function rsc_library_node_info() {
 function rsc_library_article_form($node, &$form_state) {
   return node_content_form($node, $form_state);
 }
-function rsc_library_audio_form($node, &$form_state) {
+function rsc_library_link_form($node, &$form_state) {
+  return node_content_form($node, $form_state);
+}
+function rsc_library_request_form($node, &$form_state) {
+  return node_content_form($node, $form_state);
+}
+function rsc_library_book_form($node, &$form_state) {
   return node_content_form($node, $form_state);
 }
 function rsc_library_form($node, &$form_state) {
@@ -113,11 +119,6 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
     
   } else {
 
-    $content_types = array(
-      'rsc_library_article',
-      'rsc_library_audio',
-    );
-
     if ($view_mode == 'full' && empty($GLOBALS['rsc_library']['breadcrumb_set'])) {
 
       // this is a full page entity and the breadcrumbs have not yet been set
@@ -127,7 +128,7 @@ function rsc_library_entity_view($entity, $type, $view_mode, $langcode) {
       switch($type) {
         case 'node':
     
-          if (in_array($entity->type, $content_types)) {
+          if (in_array($entity->type, rsc_library_content_types())) {
             $category_field_name = '';
     
             // determine the current library

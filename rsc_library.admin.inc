@@ -42,8 +42,10 @@ function rsc_library_settings() {
   $links = array();
   $links["admin/structure/types/manage/rsc-library"] = t('Edit "library" content type');
   $links["admin/structure/types/manage/rsc-library-article"] = t('Edit "article" content type');
-  $links["admin/structure/types/manage/rsc-library-audio"] = t('Edit "audio" content type');
-  
+  $links["admin/structure/types/manage/rsc-library-link"] = t('Edit "link" content type');
+  $links["admin/structure/types/manage/rsc-library-request"] = t('Edit "request" content type');
+  $links["admin/structure/types/manage/rsc-library-book"] = t('Edit "book" content type');
+
   $link_items = array();
   foreach($links as $path => $text) {
     $link_items[] = l($text,$path);

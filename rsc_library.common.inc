@@ -7,7 +7,7 @@ define('RSC_LIBRARY_PREFIX', 'rscl');
 /**
  * Content types. Used by hook_node_info, among others.
  */
-function rsc_library_content_types() {
+function rsc_library_content_types_info() {
   return array(
     'rsc_library_article' => array(
       'name'        => t('Library content'),
@@ -37,13 +37,23 @@ function rsc_library_content_types() {
 }
 
 
+function rsc_library_content_types() {
+  return array(
+    'rsc_library_article',
+    'rsc_library_link',
+    'rsc_library_request',
+    'rsc_library_book_preview',
+  );
+}
+
+
 /**
  * (re)set content type settings
  */
 function rsc_library_content_type_settings() {
 
   // for each "rsc_library_*" content type
-  foreach (array_keys(rsc_library_content_types()) as $type) {
+  foreach (rsc_library_content_types() as $type) {
     // settings from the content type manage page
     variable_set("node_preview_{$type}", 1);                 // Optional preview
     variable_set("node_options_{$type}", array());           // default unpublished
