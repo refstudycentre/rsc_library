@@ -72,17 +72,17 @@ function rsc_library_field__setup_fields() {
     ),
     array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_chapter',
-      'type'        => 'text',
+      'type'        => 'link_field',
       'cardinality' => 1,
     ),
     array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_publisher',
-      'type'        => 'text',
+      'type'        => 'link_field',
       'cardinality' => 1,
     ),
     array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_buy',
-      'type'        => 'text',
+      'type'        => 'link_field',
       'cardinality' => 1,
     ),
     array(
@@ -254,7 +254,7 @@ function rsc_library_field__setup_field_instances() {
     'body' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_body',
       'label'       => $t('Summary'),
-      'required'    => false,
+      'required'    => FALSE,
       'settings'    => array('text_processing' => 1), // enable rich text formats
       'display'     => array(
         'default' => array(
@@ -265,7 +265,7 @@ function rsc_library_field__setup_field_instances() {
     'summary' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_summary',
       'label'       => $t('Summary'),
-      'required'    => false,
+      'required'    => FALSE,
       'settings'    => array('text_processing' => 1), // enable rich text formats
       'display'     => array(
         'default' => array(
@@ -276,7 +276,7 @@ function rsc_library_field__setup_field_instances() {
     'full_text' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_full_text',
       'label'       => $t('Full text'),
-      'required'    => false,
+      'required'    => FALSE,
       'settings'    => array('text_processing' => 1), // enable rich text formats
       'display'     => array(
         'default' => array(
@@ -287,7 +287,7 @@ function rsc_library_field__setup_field_instances() {
     'attachment' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_attachment',
       'label'       => $t('Attachment'),
-      'required'    => false,
+      'required'    => FALSE,
       'settings'    => array(
         'file_extensions' => 'pdf',
         'file_directory'  => 'articles',
@@ -301,7 +301,7 @@ function rsc_library_field__setup_field_instances() {
     'link' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link',
       'label'       => $t('Link'),
-      'required'    => false,
+      'required'    => FALSE,
       'settings'    => array('text_processing' => 1), // enable rich text formats
       'display'     => array(
         'default' => array(
@@ -312,8 +312,18 @@ function rsc_library_field__setup_field_instances() {
     'link_to_chapter' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_chapter',
       'label'       => $t('Link to chapter'),
-      'required'    => false,
-      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'required'    => FALSE,
+      'settings'    => array(
+        'absolute_url'    => 1,
+        'validate_url'    => 1,
+        'url'             => 0,
+        'title'           => 'required',
+        'title_maxlength' => 255,
+        'enable_tokens'   => 0,
+        'attributes'      => array(
+          'target' => '_blank',
+        ),
+      ),
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -323,8 +333,18 @@ function rsc_library_field__setup_field_instances() {
     'link_to_publisher' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_publisher',
       'label'       => $t('Link to publisher'),
-      'required'    => false,
-      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'required'    => FALSE,
+      'settings'    => array(
+        'absolute_url'    => 1,
+        'validate_url'    => 1,
+        'url'             => 0,
+        'title'           => 'required',
+        'title_maxlength' => 255,
+        'enable_tokens'   => 0,
+        'attributes'      => array(
+          'target' => '_blank',
+        ),
+      ),
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -334,8 +354,18 @@ function rsc_library_field__setup_field_instances() {
     'link_to_buy' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_buy',
       'label'       => $t('Link to buy'),
-      'required'    => false,
-      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'required'    => FALSE,
+      'settings'    => array(
+        'absolute_url'    => 1,
+        'validate_url'    => 1,
+        'url'             => 0,
+        'title'           => 'required',
+        'title_maxlength' => 255,
+        'enable_tokens'   => 0,
+        'attributes'      => array(
+          'target' => '_blank',
+        ),
+      ),
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -345,7 +375,7 @@ function rsc_library_field__setup_field_instances() {
     'pages' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_pages",
       'label'       => $t('Pages'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -355,7 +385,7 @@ function rsc_library_field__setup_field_instances() {
     'weight' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_weight",
       'label'       => $t('Weight'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -365,7 +395,7 @@ function rsc_library_field__setup_field_instances() {
     'format' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_format",
       'label'       => $t('Format'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -375,7 +405,7 @@ function rsc_library_field__setup_field_instances() {
     'editor' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_editor",
       'label'       => $t('Editor'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -385,7 +415,7 @@ function rsc_library_field__setup_field_instances() {
     'code' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_code",
       'label'       => $t('Code'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -395,7 +425,7 @@ function rsc_library_field__setup_field_instances() {
     'publisher' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_publisher",
       'label'       => $t('Publisher'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -405,7 +435,7 @@ function rsc_library_field__setup_field_instances() {
     'date' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_date",
       'label'       => $t('Date'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -415,7 +445,7 @@ function rsc_library_field__setup_field_instances() {
     'book_title' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_book_title",
       'label'       => $t('Book title'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -425,7 +455,7 @@ function rsc_library_field__setup_field_instances() {
     'page_range' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_page_range",
       'label'       => $t('Page range'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -436,7 +466,7 @@ function rsc_library_field__setup_field_instances() {
       'field_name'  => RSC_LIBRARY_PREFIX."_copyright_notice",
       'label'       => $t('Copyright notice'),
       'description' => $t('Displayed as: This material is made available with the permission of ___.'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -446,7 +476,7 @@ function rsc_library_field__setup_field_instances() {
     'featured_image' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_featured_image",
       'label'       => $t('Featured image'),
-      'required'    => false,
+      'required'    => FALSE,
       'settings'    => array(
         'file_directory'  => 'featured_images',
         'file_extensions' => 'png gif jpg jpeg',
@@ -606,7 +636,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
   $taxonomy_reference_field_instances = array(
     'author' => array(
       'label'       => $t('Author'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -616,7 +646,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'editor' => array(
       'label'       => $t('Editor'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -626,7 +656,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'source' => array(
       'label'       => $t('Source'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -636,7 +666,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'tag' => array(
       'label'       => $t('Tags'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -646,7 +676,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'category' => array(
       'label'       => $t('Category (in "@lib")', array('@lib'=>$library_title)),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -666,7 +696,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'difficulty' => array(
       'label'       => $t('Difficulty'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -756,7 +786,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     array(
       'field_name'  => RSC_LIBRARY_PREFIX."_featured",
       'label'       => $t('Featured'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
@@ -772,7 +802,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     array(
       'field_name'  => RSC_LIBRARY_PREFIX."_sort_enabled",
       'label'       => $t('Enable node sorting'),
-      'required'    => false,
+      'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',

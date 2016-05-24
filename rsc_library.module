@@ -8,11 +8,16 @@ require_once "rsc_library.common.inc";
  * Implements hook_permission().
  */
 function rsc_library_permission() {
-  return array(
+
+  $permissions = array(
     'administer rsc_library' => array(
       'title' => t('Administer RSC Libraries'),
     ),
   );
+
+  // permissions like "create $type content" are created automatically
+  return $permissions;
+
 }
 
 
