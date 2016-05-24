@@ -283,7 +283,7 @@ function rsc_library_field__setup_field_instances() {
     'code' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_code",
       'label'       => $t('Code'),
-      'description' => $t(''), // TODO: description
+      'description' => $t('A unique identifier according to RSC\'s catalogue of web content.'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
@@ -703,6 +703,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
   $taxonomy_reference_field_instances = array(
     'author' => array(
       'label'       => $t('Author'),
+      'description' => $t('Who wrote this?'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
@@ -716,6 +717,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'editor' => array(
       'label'       => $t('Editor'),
+      'description' => $t('Who edited this?'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
@@ -729,6 +731,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'source' => array(
       'label'       => $t('Source'),
+      'description' => $t('Where this content comes from, e.g. the magazine in which an article was published.'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
@@ -742,6 +745,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'tag' => array(
       'label'       => $t('Tags'),
+      'description' => $t('Keywords relating to this content.'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
@@ -755,6 +759,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'category' => array(
       'label'       => $t('Category (in "@lib")', array('@lib'=>$library_title)),
+      'description' => $t('Where in the library should this be located?'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
@@ -776,6 +781,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     ),
     'difficulty' => array(
       'label'       => $t('Difficulty'),
+      'description' => $t('How difficult or technical is this content?'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
