@@ -249,22 +249,26 @@ function rsc_library_field__setup_field_instances() {
   $t = get_t();
 
   // Partially define the field instances for nodes
-  // TODO: add a short description for each field instance
   $field_instances_on_nodes = array(
     'body' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_body',
       'label'       => $t('Summary'),
+      'description' => $t('DEPRECATED. Use the other summary field for new content.'),
       'required'    => FALSE,
       'settings'    => array('text_processing' => 1), // enable rich text formats
       'display'     => array(
         'default' => array(
           'label' => 'hidden',
         ),
+      ),
+      'widget'      => array(
+        'weight' => 10,
       ),
     ),
     'summary' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_summary',
       'label'       => $t('Summary'),
+      'description' => $t('What is this node about? This field is displayed in lists, e.g. search results.'),
       'required'    => FALSE,
       'settings'    => array('text_processing' => 1), // enable rich text formats
       'display'     => array(
@@ -272,194 +276,106 @@ function rsc_library_field__setup_field_instances() {
           'label' => 'hidden',
         ),
       ),
-    ),
-    'full_text' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_full_text',
-      'label'       => $t('Full text'),
-      'required'    => FALSE,
-      'settings'    => array('text_processing' => 1), // enable rich text formats
-      'display'     => array(
-        'default' => array(
-          'label' => 'hidden',
-        ),
-      ),
-    ),
-    'attachment' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_attachment',
-      'label'       => $t('Attachment'),
-      'required'    => FALSE,
-      'settings'    => array(
-        'file_extensions' => 'pdf',
-        'file_directory'  => 'articles',
-      ),
-      'display'     => array(
-        'default' => array(
-          'label' => 'hidden',
-        ),
-      ),
-    ),
-    'link' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link',
-      'label'       => $t('Link'),
-      'required'    => FALSE,
-      'settings'    => array('text_processing' => 1), // enable rich text formats
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'link_to_chapter' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_chapter',
-      'label'       => $t('Link to chapter'),
-      'required'    => FALSE,
-      'settings'    => array(
-        'absolute_url'    => 1,
-        'validate_url'    => 1,
-        'url'             => 0,
-        'title'           => 'required',
-        'title_maxlength' => 255,
-        'enable_tokens'   => 0,
-        'attributes'      => array(
-          'target' => '_blank',
-        ),
-      ),
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'link_to_publisher' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_publisher',
-      'label'       => $t('Link to publisher'),
-      'required'    => FALSE,
-      'settings'    => array(
-        'absolute_url'    => 1,
-        'validate_url'    => 1,
-        'url'             => 0,
-        'title'           => 'required',
-        'title_maxlength' => 255,
-        'enable_tokens'   => 0,
-        'attributes'      => array(
-          'target' => '_blank',
-        ),
-      ),
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'link_to_buy' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_buy',
-      'label'       => $t('Link to buy'),
-      'required'    => FALSE,
-      'settings'    => array(
-        'absolute_url'    => 1,
-        'validate_url'    => 1,
-        'url'             => 0,
-        'title'           => 'required',
-        'title_maxlength' => 255,
-        'enable_tokens'   => 0,
-        'attributes'      => array(
-          'target' => '_blank',
-        ),
-      ),
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'pages' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_pages",
-      'label'       => $t('Pages'),
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'weight' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_weight",
-      'label'       => $t('Weight'),
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'format' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_format",
-      'label'       => $t('Format'),
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'editor' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_editor",
-      'label'       => $t('Editor'),
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
+      'widget'      => array(
+        'weight' => 20,
       ),
     ),
     'code' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_code",
       'label'       => $t('Code'),
+      'description' => $t(''), // TODO: description
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
         ),
       ),
-    ),
-    'publisher' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_publisher",
-      'label'       => $t('Publisher'),
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-    ),
-    'date' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_date",
-      'label'       => $t('Date'),
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
+      'widget'      => array(
+        'weight' => 30,
       ),
     ),
     'book_title' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_book_title",
       'label'       => $t('Book title'),
+      'description' => $t('Title of the book to which this chapter belongs.'),
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
         ),
       ),
+      'widget'      => array(
+        'weight' => 60,
+      ),
     ),
-    'page_range' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_page_range",
-      'label'       => $t('Page range'),
+    'publisher' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX."_publisher",
+      'label'       => $t('Publisher'),
+      'description' => $t('The publisher of this book.'), // TODO: make this a taxonomy reference field?
       'required'    => FALSE,
       'display'     => array(
         'default' => array(
           'type' => 'hidden',
         ),
+      ),
+      'widget'      => array(
+        'weight' => 70,
+      ),
+    ),
+    'date' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX."_date",
+      'label'       => $t('Date'),
+      'description' => $t('The year of publication.'),
+      'required'    => FALSE,
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 80,
+      ),
+    ),
+    'pages' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX."_pages",
+      'label'       => $t('Pages'),
+      'description' => $t('The number of pages.'),
+      'required'    => FALSE,
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 100,
+      ),
+    ),
+    'page_range' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX."_page_range",
+      'label'       => $t('Page range'),
+      'description' => $t('The range of page numbers, e.g. 13–27'),
+      'required'    => FALSE,
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 110,
+      ),
+    ),
+    'format' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX."_format",
+      'label'       => $t('Format'),
+      'description' => $t('The media types used in this content.'),
+      'required'    => FALSE,
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 120,
       ),
     ),
     'copyright_notice' => array(
@@ -472,10 +388,138 @@ function rsc_library_field__setup_field_instances() {
           'type' => 'hidden',
         ),
       ),
+      'widget'      => array(
+        'weight' => 130,
+      ),
+    ),
+    'attachment' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX.'_attachment',
+      'label'       => $t('Attachment'),
+      'description' => $t('PDFs, MP3s, etc. containing media for this node.'),
+      'required'    => FALSE,
+//      'settings'    => array( // This must differ for each bundle, to lower the number of files per directory
+//        'file_extensions' => 'pdf',
+//        'file_directory'  => 'articles',
+//      ),
+      'display'     => array(
+        'default' => array(
+          'label' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 150,
+      ),
+    ),
+    'link' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX.'_link',
+      'label'       => $t('Link'),
+      'description' => $t('Link to an external website. Include the full anchor tag, like this: !html', array(
+        '!html' => htmlspecialchars('<a href="" target="_blank">Read article</a>'),
+      )),
+      'required'    => FALSE,
+      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 160,
+      ),
+    ),
+    'link_to_chapter' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_chapter',
+      'label'       => $t('Link to chapter'),
+      'description' => $t('Link to an external website containing the full text for the chapter.'),
+      'required'    => FALSE,
+      'settings'    => array(
+        'absolute_url'    => 1,
+        'validate_url'    => 1,
+        'url'             => 0,
+        'title'           => 'required',
+        'title_maxlength' => 255,
+        'enable_tokens'   => 0,
+        'attributes'      => array(
+          'target' => '_blank',
+        ),
+      ),
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 170,
+      ),
+    ),
+    'link_to_publisher' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_publisher',
+      'label'       => $t('Link to publisher'),
+      'description' => $t('Link to the publisher\'s website.'),
+      'required'    => FALSE,
+      'settings'    => array(
+        'absolute_url'    => 1,
+        'validate_url'    => 1,
+        'url'             => 0,
+        'title'           => 'required',
+        'title_maxlength' => 255,
+        'enable_tokens'   => 0,
+        'attributes'      => array(
+          'target' => '_blank',
+        ),
+      ),
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 180,
+      ),
+    ),
+    'link_to_buy' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_buy',
+      'label'       => $t('Link to buy'),
+      'description' => $t('Link to a supplier which sells the full book.'),
+      'required'    => FALSE,
+      'settings'    => array(
+        'absolute_url'    => 1,
+        'validate_url'    => 1,
+        'url'             => 0,
+        'title'           => 'required',
+        'title_maxlength' => 255,
+        'enable_tokens'   => 0,
+        'attributes'      => array(
+          'target' => '_blank',
+        ),
+      ),
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 190,
+      ),
+    ),
+    'weight' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX."_weight",
+      'label'       => $t('Weight'),
+      'description' => $t('In ordered lists, where should this node rank? Heavier items sink to the bottom, and lighter items float to the top.'),
+      'required'    => FALSE,
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 220,
+      ),
     ),
     'featured_image' => array(
       'field_name'  => RSC_LIBRARY_PREFIX."_featured_image",
       'label'       => $t('Featured image'),
+      'description' => $t('An image to display along with this node to attract attention.'),
       'required'    => FALSE,
       'settings'    => array(
         'file_directory'  => 'featured_images',
@@ -489,6 +533,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
+        'weight' => 230,
         'type'     => 'image_image',
         'settings' => array(
           // TODO: depend on manualcrop module and define those settings here?
@@ -530,7 +575,21 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
     ),
-
+    'full_text' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX.'_full_text',
+      'label'       => $t('Full text'),
+      'description' => $t('The entire article, formatted using basic HTML elements. Do not use custom fonts, sizes or colors here, since those should be governed by the website\'s theme.'),
+      'required'    => FALSE,
+      'settings'    => array('text_processing' => 1), // enable rich text formats
+      'display'     => array(
+        'default' => array(
+          'label' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'weight' => 240,
+      ),
+    ),
   );
 
   // define the field instances for each content type, because not all content
@@ -540,12 +599,16 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['body'], // TODO: migrate the content of this field to "summary" and remove this field instance
       $field_instances_on_nodes['summary'],
       $field_instances_on_nodes['full_text'],
-      $field_instances_on_nodes['attachment'],
+      $field_instances_on_nodes['attachment'] + array(
+        'settings' => array(
+          'file_extensions' => 'pdf mp3',
+          'file_directory'  => 'articles',
+        ),
+      ),
       $field_instances_on_nodes['link'], // TODO: move external articles to own content type, and remove this field instance
       $field_instances_on_nodes['pages'],
       $field_instances_on_nodes['weight'],
       $field_instances_on_nodes['format'],
-      $field_instances_on_nodes['editor'],
       $field_instances_on_nodes['code'],
       $field_instances_on_nodes['publisher'],
       $field_instances_on_nodes['date'],
@@ -557,7 +620,6 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['pages'],
       $field_instances_on_nodes['weight'],
       $field_instances_on_nodes['format'],
-      $field_instances_on_nodes['editor'],
       $field_instances_on_nodes['code'],
       $field_instances_on_nodes['publisher'],
       $field_instances_on_nodes['date'],
@@ -581,7 +643,12 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['date'],
       $field_instances_on_nodes['pages'],
       $field_instances_on_nodes['copyright_notice'],
-      $field_instances_on_nodes['attachment'],
+      $field_instances_on_nodes['attachment'] + array(
+        'settings' => array(
+          'file_extensions' => 'pdf mp3',
+          'file_directory'  => 'book_previews',
+        ),
+      ),
       $field_instances_on_nodes['link_to_chapter'],
       $field_instances_on_nodes['link_to_publisher'],
       $field_instances_on_nodes['link_to_buy'],
@@ -642,7 +709,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
           'type' => 'hidden',
         ),
       ),
-      'widget'      => array('type' => 'taxonomy_autocomplete'),
+      'widget'      => array(
+        'type' => 'taxonomy_autocomplete',
+        'weight' => 40,
+      ),
     ),
     'editor' => array(
       'label'       => $t('Editor'),
@@ -652,7 +722,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
           'type' => 'hidden',
         ),
       ),
-      'widget'      => array('type' => 'taxonomy_autocomplete'),
+      'widget'      => array(
+        'type' => 'taxonomy_autocomplete',
+        'weight' => 50,
+      ),
     ),
     'source' => array(
       'label'       => $t('Source'),
@@ -662,7 +735,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
           'type' => 'hidden',
         ),
       ),
-      'widget'      => array('type' => 'taxonomy_autocomplete'),
+      'widget'      => array(
+        'type' => 'taxonomy_autocomplete',
+        'weight' => 90,
+      ),
     ),
     'tag' => array(
       'label'       => $t('Tags'),
@@ -672,7 +748,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
           'type' => 'hidden',
         ),
       ),
-      'widget'      => array('type' => 'taxonomy_autocomplete'),
+      'widget'      => array(
+        'type' => 'taxonomy_autocomplete',
+        'weight' => 200,
+      ),
     ),
     'category' => array(
       'label'       => $t('Category (in "@lib")', array('@lib'=>$library_title)),
@@ -692,6 +771,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
             'force_deepest' => FALSE,
           ),
         ),
+        'weight' => 210,
       ),
     ),
     'difficulty' => array(
@@ -702,7 +782,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
           'type' => 'hidden',
         ),
       ),
-      'widget'      => array('type' => 'options_buttons'),
+      'widget'      => array(
+        'type' => 'options_buttons',
+        'weight' => 140,
+      ),
     ),
   );
 
