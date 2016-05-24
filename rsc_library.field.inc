@@ -253,7 +253,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 10,
+        'weight' => 1,
       ),
     ),
     'summary' => array(
@@ -268,7 +268,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 20,
+        'weight' => 2,
       ),
     ),
     'code' => array(
@@ -282,7 +282,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 30,
+        'weight' => 3,
       ),
     ),
     'book_title' => array(
@@ -296,7 +296,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 60,
+        'weight' => 6,
       ),
     ),
     'date' => array(
@@ -310,7 +310,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 80,
+        'weight' => 8,
       ),
     ),
     'pages' => array(
@@ -324,7 +324,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 100,
+        'weight' => 10,
       ),
     ),
     'page_range' => array(
@@ -338,7 +338,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 110,
+        'weight' => 11,
       ),
     ),
     'format' => array(
@@ -352,7 +352,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 120,
+        'weight' => 12,
       ),
     ),
     'copyright_notice' => array(
@@ -366,7 +366,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 130,
+        'weight' => 13,
       ),
     ),
     'attachment' => array(
@@ -384,7 +384,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 150,
+        'weight' => 15,
       ),
     ),
     'link' => array(
@@ -401,7 +401,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 160,
+        'weight' => 16,
       ),
     ),
     'link_to_chapter' => array(
@@ -426,7 +426,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 170,
+        'weight' => 17,
       ),
     ),
     'link_to_publisher' => array(
@@ -451,7 +451,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 180,
+        'weight' => 18,
       ),
     ),
     'link_to_buy' => array(
@@ -476,7 +476,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 190,
+        'weight' => 19,
       ),
     ),
     'weight' => array(
@@ -490,7 +490,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 220,
+        'weight' => 22,
       ),
     ),
     'featured_image' => array(
@@ -510,7 +510,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 230,
+        'weight' => 23,
         'type'     => 'image_image',
         'settings' => array(
           // TODO: depend on manualcrop module and define those settings here?
@@ -564,7 +564,7 @@ function rsc_library_field__setup_field_instances() {
         ),
       ),
       'widget'      => array(
-        'weight' => 240,
+        'weight' => 24,
       ),
     ),
   );
@@ -685,7 +685,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       ),
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
-        'weight' => 40,
+        'weight' => 4,
       ),
     ),
     'editor' => array(
@@ -699,7 +699,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       ),
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
-        'weight' => 50,
+        'weight' => 5,
       ),
     ),
     'publisher' => array(
@@ -713,7 +713,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       ),
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
-        'weight' => 70,
+        'weight' => 7,
       ),
     ),
     'source' => array(
@@ -727,7 +727,21 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       ),
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
-        'weight' => 90,
+        'weight' => 9,
+      ),
+    ),
+    'difficulty' => array(
+      'label'       => $t('Difficulty'),
+      'description' => $t('How difficult or technical is this content?'),
+      'required'    => FALSE,
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'type' => 'options_buttons',
+        'weight' => 14,
       ),
     ),
     'tag' => array(
@@ -741,7 +755,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       ),
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
-        'weight' => 200,
+        'weight' => 20,
       ),
     ),
     'category' => array(
@@ -763,21 +777,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
             'force_deepest' => FALSE,
           ),
         ),
-        'weight' => 210,
-      ),
-    ),
-    'difficulty' => array(
-      'label'       => $t('Difficulty'),
-      'description' => $t('How difficult or technical is this content?'),
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-      'widget'      => array(
-        'type' => 'options_buttons',
-        'weight' => 140,
+        'weight' => 21,
       ),
     ),
   );
