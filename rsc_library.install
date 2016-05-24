@@ -52,8 +52,6 @@ function rsc_library_install() {
     $permissions['node'][] = "delete any ${type} content";
   }
 
-  dpm($permissions);
-
   // Assign the permissions to library staff
   _rsc_library_grant_permissions($role->rid, $permissions);
   
