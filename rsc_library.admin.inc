@@ -196,6 +196,16 @@ function rsc_library_node_settings($node = NULL) {
       '#default_value' => isset($settings['vocabs']['editor']) ? $settings['vocabs']['editor'] : -1,
       '#options'       => $vocab_options,
     );
+
+    $form['vocabs']['publisher'] = array(
+      '#type'          => 'select',
+      '#required'      => FALSE,
+      '#multiple'      => FALSE,
+      '#title'         => t('publishers'),
+      '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
+      '#default_value' => isset($settings['vocabs']['publisher']) ? $settings['vocabs']['publisher'] : -1,
+      '#options'       => $vocab_options,
+    );
   
     $form['vocabs']['source'] = array(
       '#type'          => 'select',

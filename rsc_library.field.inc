@@ -51,17 +51,7 @@ function rsc_library_field__setup_fields() {
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_editor',
-      'type'        => 'text',
-      'cardinality' => 1,
-    ),
-    array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_code',
-      'type'        => 'text',
-      'cardinality' => 1,
-    ),
-    array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_publisher',
       'type'        => 'text',
       'cardinality' => 1,
     ),
@@ -168,6 +158,7 @@ function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
   static $cardinality = array(
     'author'     => FIELD_CARDINALITY_UNLIMITED,
     'editor'     => FIELD_CARDINALITY_UNLIMITED,
+    'publisher'  => 1,
     'tag'        => FIELD_CARDINALITY_UNLIMITED,
     'category'   => FIELD_CARDINALITY_UNLIMITED,
     'difficulty' => 1,
@@ -306,20 +297,6 @@ function rsc_library_field__setup_field_instances() {
       ),
       'widget'      => array(
         'weight' => 60,
-      ),
-    ),
-    'publisher' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_publisher",
-      'label'       => $t('Publisher'),
-      'description' => $t('The publisher of this book.'), // TODO: make this a taxonomy reference field?
-      'required'    => FALSE,
-      'display'     => array(
-        'default' => array(
-          'type' => 'hidden',
-        ),
-      ),
-      'widget'      => array(
-        'weight' => 70,
       ),
     ),
     'date' => array(
@@ -610,7 +587,6 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['weight'],
       $field_instances_on_nodes['format'],
       $field_instances_on_nodes['code'],
-      $field_instances_on_nodes['publisher'],
       $field_instances_on_nodes['date'],
       $field_instances_on_nodes['featured_image'],
     ),
@@ -621,7 +597,6 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['weight'],
       $field_instances_on_nodes['format'],
       $field_instances_on_nodes['code'],
-      $field_instances_on_nodes['publisher'],
       $field_instances_on_nodes['date'],
       $field_instances_on_nodes['featured_image'],
     ),
@@ -629,7 +604,6 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['summary'],
       $field_instances_on_nodes['code'],
       $field_instances_on_nodes['book_title'],
-      $field_instances_on_nodes['publisher'],
       $field_instances_on_nodes['date'],
       $field_instances_on_nodes['page_range'],
       $field_instances_on_nodes['weight'],
@@ -639,7 +613,6 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['summary'],
       $field_instances_on_nodes['code'],
       $field_instances_on_nodes['book_title'],
-      $field_instances_on_nodes['publisher'],
       $field_instances_on_nodes['date'],
       $field_instances_on_nodes['pages'],
       $field_instances_on_nodes['copyright_notice'],
@@ -727,6 +700,20 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
         'weight' => 50,
+      ),
+    ),
+    'publisher' => array(
+      'label'       => $t('Publisher'),
+      'description' => $t('The publisher of this book.'),
+      'required'    => FALSE,
+      'display'     => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'type' => 'taxonomy_autocomplete',
+        'weight' => 70,
       ),
     ),
     'source' => array(
@@ -844,6 +831,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     'rsc_library_request' => array(
       $taxonomy_reference_field_instances['author'],
       $taxonomy_reference_field_instances['editor'],
+      $taxonomy_reference_field_instances['publisher'],
       $taxonomy_reference_field_instances['tag'],
       $taxonomy_reference_field_instances['category'],
       $taxonomy_reference_field_instances['difficulty'],
@@ -851,6 +839,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
     'rsc_library_book_preview' => array(
       $taxonomy_reference_field_instances['author'],
       $taxonomy_reference_field_instances['editor'],
+      $taxonomy_reference_field_instances['publisher'],
       $taxonomy_reference_field_instances['tag'],
       $taxonomy_reference_field_instances['category'],
       $taxonomy_reference_field_instances['difficulty'],
