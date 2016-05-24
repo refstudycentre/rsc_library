@@ -26,12 +26,14 @@ function rsc_library_content_types_info() {
       'base'        => 'rsc_library_request',
       'description' => t("Content that may be requested via email"),
       'locked'      => TRUE,  // admin cannot change machine name
+      'title_label' => t('Chapter title'),
     ),
     'rsc_library_book_preview' => array(
       'name'        => t('Book preview'),
       'base'        => 'rsc_library_book_preview',
       'description' => t("A book, usually for sale, of which we host the first chapter"),
       'locked'      => TRUE,  // admin cannot change machine name
+      'title_label' => t('Chapter title'),
     ),
   );
 }

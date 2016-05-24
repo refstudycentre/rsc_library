@@ -53,6 +53,7 @@ function rsc_library_node_info() {
       'base'        => 'rsc_library',
       'description' => t("Contains the settings and front page markup for a library."),
       'locked'      => TRUE,  // admin cannot change machine name
+      'title_label' => t('Library name'),
     ),
   );
 
