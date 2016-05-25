@@ -591,7 +591,7 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['featured_image'],
     ),
     'rsc_library_link' => array(
-      $field_instances_on_nodes['body'],
+      $field_instances_on_nodes['summary'],
       $field_instances_on_nodes['link'],
       $field_instances_on_nodes['pages'],
       $field_instances_on_nodes['weight'],
