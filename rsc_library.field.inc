@@ -589,7 +589,7 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['full_text'],
       $field_instances_on_nodes['attachment'] + array(
         'settings' => array(
-          'file_extensions' => 'pdf mp3',
+          'file_extensions' => 'pdf mp3 ogg mp4 avi',
           'file_directory'  => 'articles',
         ),
       ),
