@@ -614,7 +614,7 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['code'],
       $field_instances_on_nodes['book_title'],
       $field_instances_on_nodes['date'],
-      $field_instances_on_nodes['pages'],
+      $field_instances_on_nodes['page_range'],
       $field_instances_on_nodes['copyright_notice'],
       $field_instances_on_nodes['attachment'] + array(
         'settings' => array(
