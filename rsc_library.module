@@ -336,3 +336,61 @@ function rsc_library_node_access($node, $op, $account) {
 
 }
 
+
+/**
+ * Implements hook_node_presave($node).
+ * https://api.drupal.org/api/drupal/modules!node!node.api.php/function/hook_node_presave/7.x
+ * Act on nodes before they are saved
+ */
+function rsc_library_node_presave($node) {
+
+  // set the rscl_format field on library content automatically before saving
+  if ($node->type == 'rsc_library_article') {
+    rsc_library_set_format_field($node);
+  }
+
+}
+
+
+/**
+ * Calculate the value for the rscl_format field, based on the media used in other fields
+ */
+function rsc_library_set_format_field(&$node) {
+
+  /** @var EntityDrupalWrapper $node_wrapper An EntityMetadataWrapper for the node */
+  $node_wrapper = entity_metadata_wrapper('node', $node);
+
+  // compile a list of formats
+  $formats = array();
+
+  // check the type of each attached file
+  foreach ($node_wrapper->rscl_attachment->getIterator() as $delta => $field_value_wrapper) {
+    $file = file_load($field_value_wrapper->value()['fid']);
+    $type = $file->filemime;
+
+    // TEXT
+    if (!in_array('text', $formats) && (substr($type, -3) == 'pdf' || substr($type, 0, 4) == 'text')) {
+      $formats[] = 'text';
+    }
+
+    // AUDIO
+    if (!in_array('audio', $formats) && substr($type, 0, 5) == 'audio') {
+      $formats[] = 'audio';
+    }
+
+    // VIDEO
+    if (!in_array('video', $formats) && substr($type, 0, 5) == 'video') {
+      $formats[] = 'video';
+    }
+
+  }
+
+  // check if the article has HTML full-text
+  if (!in_array('text', $formats) && !empty($node_wrapper->rscl_full_text->value())) {
+    $formats[] = 'text';
+  }
+
+  // set the rscl_format field
+  $node_wrapper->rscl_format->set($formats);
+
+}

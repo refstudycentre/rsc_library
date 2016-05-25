@@ -10,8 +10,11 @@ require_once "rsc_library.common.inc";
  */
 function rsc_library_field__setup_fields() {
 
+  // Get the proper translation function, since this function might run during install, or any other time
+  $t = get_t();
+
   // Fields defined by this module, that do not change based on user settings:
-  static $rsc_library_fields_static = array(
+  $rsc_library_fields_static = array(
     array( // DEPRECATED. TODO: migrate content from the body field to summary
       'field_name'  => RSC_LIBRARY_PREFIX.'_body',
       'type'        => 'text_long',
@@ -30,7 +33,7 @@ function rsc_library_field__setup_fields() {
     array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_attachment',
       'type'        => 'file',
-      'cardinality' => 1,
+      'cardinality' => -1,
       'settings'    => array(
         'uri_scheme' => 'public',
       ),
@@ -48,7 +51,14 @@ function rsc_library_field__setup_fields() {
     array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_format',
       'type'        => 'list_text',
-      'cardinality' => 1,
+      'cardinality' => -1,
+      'settings'    => array(
+        'allowed_values' => array(
+          'text'  => $t('Text'),
+          'audio' => $t('Audio'),
+          'video' => $t('Video'),
+        ),
+      ),
     ),
     array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_code',
@@ -353,6 +363,7 @@ function rsc_library_field__setup_field_instances() {
       ),
       'widget'      => array(
         'weight' => 12,
+        'type'   => 'options_buttons',
       ),
     ),
     'copyright_notice' => array(
@@ -607,6 +618,7 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['date'],
       $field_instances_on_nodes['page_range'],
       $field_instances_on_nodes['weight'],
+      $field_instances_on_nodes['format'],
       $field_instances_on_nodes['featured_image'],
     ),
     'rsc_library_book_preview' => array(
