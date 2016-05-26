@@ -22,21 +22,21 @@ function rsc_library_settings() {
   
   /* build the form */
   $form['#tree'] = TRUE; // save the whole thing as an array
-  
+
   $form['rsc_library']['actions'] = array(
-    '#type'              => 'radios',
-    '#title'             => 'Actions:',
-    '#default_value'     => 'Nothing',
-    '#options'           => array(
-      0                        => 'Nothing',
-      'content_type_reset'     => 'Reset the content type settings.',
-      'fields_create'          => '(re)Create missing fields and instances',
-      'fields_cleanup'         => 'Delete (clean up) unused fields',
+    '#type' => 'radios',
+    '#title' => 'Actions:',
+    '#default_value' => 'Nothing',
+    '#options' => array(
+      0 => 'Nothing',
+      'content_type_reset' => 'Reset the content type settings.',
+      'fields_setup' => 'Create missing fields and instances, and update existing ones.',
+      'fields_cleanup' => 'Delete (clean up) unused fields',
     ),
-    '#description'       => t('Choose an optional action to perform when submitting.'),
+    '#description' => t('Choose an optional action to perform when submitting.'),
     'content_type_reset' => array('#description' => t("Default settings include: unpublished by default, comments open, etc.")),
-    'fields_create'      => array('#description' => t("Old fields and field instances will not be deleted automatically. If you are experiencing trouble with a field or field instance, delete it, and then choose this option. YOU WILL LOSE ALL VALUES CONTAINED IN EVERY INSTANCE OF A FIELD IF YOU DELETE IT.")),
-    'fields_cleanup'     => array('#description' => t("This will delete all fields created by rsc_library which do not have any instances (i.e. are not linked to a content type any more). YOU WILL LOSE ALL DATA IN THESE FIELDS.")),
+    'fields_setup' => array('#description' => t("Old fields and field instances will not be deleted automatically. If you are experiencing trouble with a field or field instance, delete it, and then choose this option. YOU WILL LOSE ALL VALUES CONTAINED IN EVERY INSTANCE OF A FIELD IF YOU DELETE IT.")),
+    'fields_cleanup' => array('#description' => t("This will delete all fields created by rsc_library which do not have any instances (i.e. are not linked to a content type any more). YOU WILL LOSE ALL DATA IN THESE FIELDS.")),
   );
   
   $links = array();
@@ -93,12 +93,12 @@ function rsc_library_settings_submit($form, &$form_state) {
         drupal_set_message("Unused fields from rsc_library have been deleted.");
         
         break;
-      case 'fields_create':
+      case 'fields_setup':
         
         module_load_include('inc','rsc_library','rsc_library.field');
         rsc_library_field__setup_fields();
         rsc_library_field__setup_field_instances();
-        drupal_set_message("Fields and instances for rsc_library have been created.");
+        drupal_set_message("Fields and instances for rsc_library have been created and/or updated.");
         
         break;
     }

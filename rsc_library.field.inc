@@ -8,109 +8,129 @@ require_once "rsc_library.common.inc";
  */
 function rsc_library_field__setup_fields() {
 
+  // body text with summary for library front page
+  node_add_body_field(node_type_get_type('rsc_library'));
+
+  // Create static fields (i.e. those that do not change based on library settings)
+  rsc_library_field__setup_static_fields();
+
+  // Create taxonomy reference fields for each library:
+  foreach(rsc_library_get_lids() as $lid) {
+    rsc_library_field__setup_taxonomy_fields_for_library($lid);
+  }
+
+}
+
+
+/**
+ * @throws \Exception
+ * @throws \FieldException
+ */
+function rsc_library_field__setup_static_fields() {
+
   // Get the proper translation function, since this function might run during install, or any other time
   $t = get_t();
 
-  // Fields defined by this module, that do not change based on user settings:
+  // Fields defined by this module, that do not change based on library settings:
   $rsc_library_fields_static = array(
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_summary',
-      'type'        => 'text_long',
+      'field_name' => RSC_LIBRARY_PREFIX . '_summary',
+      'type' => 'text_long',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_full_text',
-      'type'        => 'text_long',
+      'field_name' => RSC_LIBRARY_PREFIX . '_full_text',
+      'type' => 'text_long',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_attachment',
-      'type'        => 'file',
+      'field_name' => RSC_LIBRARY_PREFIX . '_attachment',
+      'type' => 'file',
       'cardinality' => -1,
-      'settings'    => array(
+      'settings' => array(
         'uri_scheme' => 'public',
       ),
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_pages',
-      'type'        => 'number_integer',
+      'field_name' => RSC_LIBRARY_PREFIX . '_pages',
+      'type' => 'number_integer',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_weight',
-      'type'        => 'number_integer',
+      'field_name' => RSC_LIBRARY_PREFIX . '_weight',
+      'type' => 'number_integer',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_format',
-      'type'        => 'list_text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_format',
+      'type' => 'list_text',
       'cardinality' => -1,
-      'settings'    => array(
+      'settings' => array(
         'allowed_values' => array(
-          'text'  => $t('Text'),
+          'text' => $t('Text'),
           'audio' => $t('Audio'),
           'video' => $t('Video'),
         ),
       ),
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_code',
-      'type'        => 'text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_code',
+      'type' => 'text',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link',
-      'type'        => 'text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_link',
+      'type' => 'text',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_chapter',
-      'type'        => 'link_field',
+      'field_name' => RSC_LIBRARY_PREFIX . '_link_to_chapter',
+      'type' => 'link_field',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_publisher',
-      'type'        => 'link_field',
+      'field_name' => RSC_LIBRARY_PREFIX . '_link_to_publisher',
+      'type' => 'link_field',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_buy',
-      'type'        => 'link_field',
+      'field_name' => RSC_LIBRARY_PREFIX . '_link_to_buy',
+      'type' => 'link_field',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_date',
-      'type'        => 'text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_date',
+      'type' => 'text',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_book_title',
-      'type'        => 'text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_book_title',
+      'type' => 'text',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_page_range',
-      'type'        => 'text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_page_range',
+      'type' => 'text',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_copyright_notice',
-      'type'        => 'text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_copyright_notice',
+      'type' => 'text',
       'cardinality' => 1,
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_featured_image',
-      'type'        => 'image',
+      'field_name' => RSC_LIBRARY_PREFIX . '_featured_image',
+      'type' => 'image',
       'cardinality' => 1,
-      'settings'    => array(
+      'settings' => array(
         'uri_scheme' => 'public',
       ),
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_featured',
-      'type'        => 'list_boolean',
+      'field_name' => RSC_LIBRARY_PREFIX . '_featured',
+      'type' => 'list_boolean',
       'cardinality' => 1,
-      'settings'    => array(
+      'settings' => array(
         'allowed_values' => array(
           0 => '',
           1 => '',
@@ -118,10 +138,10 @@ function rsc_library_field__setup_fields() {
       ),
     ),
     array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_sort_enabled',
-      'type'        => 'list_boolean',
+      'field_name' => RSC_LIBRARY_PREFIX . '_sort_enabled',
+      'type' => 'list_boolean',
       'cardinality' => 1,
-      'settings'    => array(
+      'settings' => array(
         'allowed_values' => array(
           0 => '',
           1 => '',
@@ -130,23 +150,17 @@ function rsc_library_field__setup_fields() {
     ),
   );
 
-  // body text with summary for library front page
-  node_add_body_field(node_type_get_type('rsc_library'));
-
   // get a list of existing fields, so that we don't add duplicates:
   $field_names = array_keys(field_info_fields());
 
-  // add fields that do not change based on user settings:
+  // add fields that do not change based on library settings:
   foreach ($rsc_library_fields_static as $field_info) {
     $field_name = $field_info['field_name'];
-    if (!in_array($field_name, $field_names)) {
+    if (in_array($field_name, $field_names)) {
+      field_update_field($field_info);
+    } else {
       field_create_field($field_info);
     }
-  }
-
-  // Create taxonomy reference fields for each library:
-  foreach(rsc_library_get_lids() as $lid) {
-    rsc_library_field__setup_taxonomy_fields_for_library($lid);
   }
 
 }
@@ -200,37 +214,40 @@ function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
   $field_names = array_keys(field_info_fields());
 
   // for each taxonomy reference field
-  foreach ($library_settings['vocabs'] as $field => $vid) {
+  foreach ($library_settings['vocabs'] as $field_shortname => $vid) {
 
     // load the vocabulary info
-    $vocab = taxonomy_vocabulary_load($vid);
+    $vocabulary = taxonomy_vocabulary_load($vid);
 
     // determine what this field should be called
-    $field_name = RSC_LIBRARY_PREFIX . "_{$field}_{$vocab->machine_name}";
+    $field_name = RSC_LIBRARY_PREFIX . "_{$field_shortname}_{$vocabulary->machine_name}";
     if (strlen($field_name) > 32) {
       drupal_set_message(t('Cannot create field @fieldname (more than 32 characters).', array('@fieldname' => $field_name)), 'error');
       continue;
     }
 
-    // create it if it doesn't exist yet
-    if (!in_array($field_name, $field_names)) {
-      field_create_field(array(
-        'field_name' => $field_name,
-        'type' => 'taxonomy_term_reference',
-        'cardinality' => $cardinality[$field],
-        'settings' => array(
-          'allowed_values' => array(
-            array(
-              'vocabulary' => $vocab->machine_name,
-              'parent' => '0',
-            ),
+    $field = array(
+      'field_name' => $field_name,
+      'type' => 'taxonomy_term_reference',
+      'cardinality' => $cardinality[$field_shortname],
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'vocabulary' => $vocabulary->machine_name,
+            'parent' => '0',
           ),
         ),
-      ));
+      ),
+    );
 
-      // add field name to list to prevent duplicate creation attempts
-      $field_names[] = $field_name;
+    if (in_array($field_name, $field_names)) {
+      // update the existing field info
+      field_update_field($field);
+    } else {
+      // create it if it doesn't exist yet
+      field_create_field($field);
     }
+
   }
 
 }
@@ -761,7 +778,7 @@ function rsc_library_field__setup_field_instances() {
 
   // add the field instances to the content types
   foreach ($field_instances_by_type as $type => $field_instances) {
-    rsc_library_field__create_field_instances_on_bundle('node', $type, $field_instances);
+    rsc_library_field__setup_field_instances_on_bundle('node', $type, $field_instances);
   }
 
   // add per-library field instances to various bundles
@@ -1037,7 +1054,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
 
   // add the field instances to the content types
   foreach ($field_instances_by_type as $type => $field_instances) {
-    rsc_library_field__create_field_instances_on_bundle('node', $type, $field_instances);
+    rsc_library_field__setup_field_instances_on_bundle('node', $type, $field_instances);
   }
 
 
@@ -1088,7 +1105,7 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
   $category_vocabulary = taxonomy_vocabulary_load($library_settings['vocabs']['category']);
 
   // Create the field instances on the appropriate bundle
-  rsc_library_field__create_field_instances_on_bundle('taxonomy_term', $category_vocabulary->machine_name, $field_instances_on_taxonomy_terms);
+  rsc_library_field__setup_field_instances_on_bundle('taxonomy_term', $category_vocabulary->machine_name, $field_instances_on_taxonomy_terms);
 
 }
 
@@ -1115,7 +1132,10 @@ function rsc_library_field__cleanup() {
 /**
  * Create field instances on a bundle if they don't exist yet.
  */
-function rsc_library_field__create_field_instances_on_bundle($entity_type, $bundle, $new_field_instances) {
+function rsc_library_field__setup_field_instances_on_bundle($entity_type, $bundle, $new_field_instances) {
+
+  // Get the proper translation function, since this function might run during install, or any other time
+  $t = get_t();
 
   // Get a list of existing fields and field instances
   $existing_fields = array_keys(field_info_fields());
@@ -1124,15 +1144,27 @@ function rsc_library_field__create_field_instances_on_bundle($entity_type, $bund
   // Create each field instance if it does not exist yet
   foreach ($new_field_instances as $new_field_instance) {
     $field_name = $new_field_instance['field_name'];
-    if (
-      !in_array($field_name, $existing_field_instances) &&  // is not an existing field instance
-      in_array($field_name, $existing_fields)  // is an existing field
-    ) {
-      $new_field_instance['entity_type'] = $entity_type;
-      $new_field_instance['bundle'] = $bundle;
+
+    // check that the field exists
+    if (!in_array($field_name, $existing_fields)) {
+      drupal_set_message($t("Cannot create field instance, because field @field does not exist.", array('@field'=>$field_name)), 'error', FALSE);
+      continue;
+    }
+
+    $new_field_instance['entity_type'] = $entity_type;
+    $new_field_instance['bundle'] = $bundle;
+
+    if (in_array($field_name, $existing_field_instances)) {
+      // update an existing field instance
+      $existing_field_instance = field_info_instance($entity_type, $field_name, $bundle);
+      $updated_field_instance = array_replace_recursive($existing_field_instance, $new_field_instance);
+      field_update_instance($updated_field_instance);
+    } else {
+      // create a new field instance
       field_create_instance($new_field_instance);
       $existing_field_instances[] = $field_name;
     }
+
   }
 
 }
