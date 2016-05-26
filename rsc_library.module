@@ -2,6 +2,7 @@
 
 require_once "rsc_library.blocks.inc";
 require_once "rsc_library.common.inc";
+require_once "rsc_library.template.inc";
 
 
 /**
@@ -249,83 +250,6 @@ function rsc_library_shorten($str) {
   $str = implode(' ',$words);
 
   return $str;
-}
-
-
-/**
- * Implements hook_preprocess_HOOK(&$variables)
- * https://api.drupal.org/api/drupal/modules!system!theme.api.php/function/hook_preprocess_HOOK/7
- */
-function rsc_library_preprocess_node(&$vars) {
-
-  if ($vars['type'] == 'rsc_library_article') { // For library articles:
-
-    // add microdata
-    // TODO: should field microdata also be done in this module? currently in theme, AFAIK ... eish
-    $vars['attributes_array']['itemscope'] = NULL;
-    $vars['attributes_array']['itemtype'] = 'http://schema.org/Article';
-    $vars['title_attributes_array']['itemprop'] = 'name';
-
-  }
-
-}
-
-
-/**
- * Implements template_preprocess_field(&$variables, $hook)
- * https://api.drupal.org/api/drupal/modules%21field%21field.module/function/template_preprocess_field/7
- */
-function rsc_library_preprocess_field(&$vars) {
-
-  /* Modify the display of some fields */
-  if ($vars['element']['#field_name'] == RSC_LIBRARY_PREFIX.'_copyright_notice') {
-    // assume there is only one field value
-    $vars['items'][0]['#prefix'] = t("This material is made available with the permission of ");
-    $vars['items'][0]['#suffix'] = t(".");
-  }
-
-// TODO: improve this bit on microdata, or move it to a separate module?
-  if ($vars['element']['#bundle'] == 'rsc_library_article') {
-
-    // microdata
-    // TODO: auto-detect field-names or make them manually configurable
-    switch ($vars['element']['#field_name']) {
-
-      case 'body':
-        $vars['attributes_array']['itemprop'] = 'description';
-        foreach($vars['items'] as &$item) {
-          $item = preg_replace('/<a/','<a itemprop="about"',$item);
-        }
-        break;
-
-      case 'field_author_tax':
-        foreach ($vars['items'] as &$item) {
-          $item['#options']['attributes']['itemprop'] = 'author';
-        }
-        break;
-
-      case 'field_link':
-        foreach ($vars['items'] as &$item) {
-          $item['#markup'] = preg_replace('/<a/','$0 itemprop="url"',$item['#markup']);
-        }
-        break;
-
-      case 'field_attachment':
-        foreach ($vars['items'] as &$item) {
-          $item['#markup'] = preg_replace('/<li class="read"><a/','$0 itemprop="url"',$item['#markup']);
-        }
-        break;
-
-      case 'field_source_tax':
-        $vars['attributes_array']['itemprop'] = 'publisher';
-        break;
-
-      case 'field_date':
-        $vars['attributes_array']['itemprop'] = 'datePublished';
-        break;
-    }
-  }
-
 }
 
 
