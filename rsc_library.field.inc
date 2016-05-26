@@ -1139,6 +1139,9 @@ function rsc_library_field__cleanup() {
  */
 function rsc_library_field__setup_field_instances_on_bundle($entity_type, $bundle, $new_field_instances) {
 
+  // Get the proper translation function, since this function might run during install, or any other time
+  $t = get_t();
+
   // Get a list of existing fields and field instances
   $existing_fields = array_keys(field_info_fields());
   $existing_field_instances = array_keys(field_info_instances($entity_type, $bundle));
