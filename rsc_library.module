@@ -277,6 +277,14 @@ function rsc_library_preprocess_node(&$vars) {
  */
 function rsc_library_preprocess_field(&$vars) {
 
+  /* Modify the display of some fields */
+  if ($vars['element']['#field_name'] == RSC_LIBRARY_PREFIX.'_copyright_notice') {
+    // assume there is only one field value
+    $vars['items'][0]['#prefix'] = t("This material is made available with the permission of ");
+    $vars['items'][0]['#suffix'] = t(".");
+  }
+
+// TODO: improve this bit on microdata, or move it to a separate module?
   if ($vars['element']['#bundle'] == 'rsc_library_article') {
 
     // microdata
