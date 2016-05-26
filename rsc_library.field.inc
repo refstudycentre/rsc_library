@@ -5,8 +5,6 @@ require_once "rsc_library.common.inc";
 
 /**
  * (re)create fields
- * FIXME: this uses outdated $settings variable if function is called in a library node edit form submit handler.
- * Workaround: submit form once for setting vocabs, second time for creating fields
  */
 function rsc_library_field__setup_fields() {
 
@@ -15,11 +13,6 @@ function rsc_library_field__setup_fields() {
 
   // Fields defined by this module, that do not change based on user settings:
   $rsc_library_fields_static = array(
-    array( // DEPRECATED. TODO: migrate content from the body field to summary
-      'field_name'  => RSC_LIBRARY_PREFIX.'_body',
-      'type'        => 'text_long',
-      'cardinality' => 1,
-    ),
     array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_summary',
       'type'        => 'text_long',
@@ -161,6 +154,8 @@ function rsc_library_field__setup_fields() {
 
 /**
  * Create "taxonomy term reference" fields for a specific library
+ * FIXME: this uses outdated $settings variable if function is called in a library node edit form submit handler.
+ * Workaround: submit form once for setting vocabs, second time for creating fields
  */
 function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
 
