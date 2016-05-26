@@ -30,7 +30,7 @@ function rsc_library_settings() {
     '#options' => array(
       0 => 'Nothing',
       'content_type_reset' => 'Reset the content type settings.',
-      'fields_create' => 'Create missing fields and instances, and update existing ones.',
+      'fields_setup' => 'Create missing fields and instances, and update existing ones.',
       'fields_cleanup' => 'Delete (clean up) unused fields',
     ),
     '#description' => t('Choose an optional action to perform when submitting.'),
