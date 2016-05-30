@@ -298,23 +298,10 @@ function rsc_library_set_format_field(&$node) {
   // check the type of each attached file
   foreach ($node_wrapper->rscl_attachment->getIterator() as $delta => $field_value_wrapper) {
     $file = file_load($field_value_wrapper->value()['fid']);
-    $type = $file->filemime;
-
-    // TEXT
-    if (!in_array('text', $formats) && (substr($type, -3) == 'pdf' || substr($type, 0, 4) == 'text')) {
-      $formats[] = 'text';
+    $format = rsc_attachment_formatter_get_type($file->filemime);
+    if (!in_array($format, $formats)) {
+      $formats[] = $format;
     }
-
-    // AUDIO
-    if (!in_array('audio', $formats) && substr($type, 0, 5) == 'audio') {
-      $formats[] = 'audio';
-    }
-
-    // VIDEO
-    if (!in_array('video', $formats) && substr($type, 0, 5) == 'video') {
-      $formats[] = 'video';
-    }
-
   }
 
   // check if the article has HTML full-text
