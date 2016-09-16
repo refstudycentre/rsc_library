@@ -15,6 +15,6 @@ dependencies[] = pathauto
 dependencies[] = image
 dependencies[] = link
 dependencies[] = comment
-dependencies[] = rsc_attachment_formatter
+dependencies[] = rsc_attachment_formatter (2.x)
 
 configure = admin/structure/rsc_library
