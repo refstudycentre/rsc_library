@@ -292,6 +292,11 @@ function rsc_library_set_format_field(&$node) {
   /** @var EntityDrupalWrapper $node_wrapper An EntityMetadataWrapper for the node */
   $node_wrapper = entity_metadata_wrapper('node', $node);
 
+  // check if the destination field exists
+  if (!isset($node_wrapper->rscl_format)) {
+    return;
+  }
+
   // compile a list of formats
   $formats = array();
 
@@ -310,8 +315,14 @@ function rsc_library_set_format_field(&$node) {
     $formats[] = 'text';
   }
 
-  // set the rscl_format field
-  $node_wrapper->rscl_format->set($formats);
+  try {
+    // set the rscl_format field
+    $node_wrapper->rscl_format->set($formats);
+  } catch (EntityMetadataWrapperException $e) {
+    file_put_contents("formats.txt", var_export($formats, TRUE));
+    file_put_contents("node.txt", var_export($node, TRUE));
+    throw $e;
+  }
 
 }
 

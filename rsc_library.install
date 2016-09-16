@@ -104,9 +104,10 @@ function _rsc_library_grant_permissions($rid, array $permissions = array()) {
  *
  * Never renumber update functions.
  *
- * The $sandbox parameter should be used when a multipass update is needed, in circumstances where running the whole update at once could cause PHP to timeout. Each pass is run in a way that avoids PHP timeouts, provided each pass remains under the timeout limit. To signify that an update requires at least one more pass, set $sandbox['#finished'] to a number less than 1 (you need to do this each pass). The value of $sandbox['#finished'] will be unset between passes but all other data in $sandbox will be preserved. The system will stop iterating this update when $sandbox['#finished'] is left unset or set to a number higher than 1. It is recommended that $sandbox['#finished'] is initially set to 0, and then updated each pass to a number between 0 and 1 that represents the overall % completed for this update, finishing with 1.
- *
  * Optionally, update hooks may return a translated string that will be displayed to the user after the update has completed. If no message is returned, no message will be presented to the user.
+ *
+ * BUG ALERT: Apparently we shouldn't rely on module APIs to be available when running update scripts. Yet we need them (e.g. node_delete_multiple). How do we handle this?
+ *
  */
 
 
@@ -114,6 +115,8 @@ function _rsc_library_grant_permissions($rid, array $permissions = array()) {
  * Delete all nodes of type "rsc_library_audio"
  */
 function rsc_library_update_7200() {
+
+
 
   $bundle = "rsc_library_audio";
 
@@ -158,6 +161,114 @@ function rsc_library_update_7201() {
   return t("Deleted content type `@type`.", array(
     '@type' => $bundle,
   ));
+
+}
+
+
+/**
+ * Delete the rscl_format field, since it did not contain useful info in the previous use case.
+ * Update and/or create fields and instances based on the current settings.
+ */
+function rsc_library_update_7202() {
+
+  module_load_include('inc','rsc_library','rsc_library.field');
+
+  $field_name = 'rscl_format';
+
+  field_delete_field($field_name);
+  rsc_library_field__setup_fields();
+  rsc_library_field__setup_field_instances();
+
+  return t("Data in field `@field` has been discarded. Fields and instances for rsc_library have been created and/or updated.", array(
+    '@field' => $field_name,
+  ));
+
+}
+
+
+/**
+ * Migrate content from the rscl_body field to rscl_summary.
+ * This loads and saves every node of type rsc_library_article, which has the
+ * side effect of updating the rscl_format field, too.
+ */
+function rsc_library_update_7203(&$sandbox) {
+
+  $bundle = 'rsc_library_article';
+
+  if (!isset($sandbox['progress'])) {
+
+    // Get all relevant nids
+    $query = new EntityFieldQuery();
+    $query
+      ->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', $bundle)
+      ->addMetaData('account', user_load(1));
+    $result = $query->execute();
+    if (!empty($result['node'])) {
+      $sandbox['nids'] = array_keys($result['node']);
+      $sandbox['progress'] = 0;
+    } else {
+      $sandbox['#finished'] = TRUE;
+      return t("There were no nodes of type @type to process.", array(
+        '@type' => $bundle,
+      ));
+    }
+
+  }
+
+  // load the node
+  $nid = array_shift($sandbox['nids']);
+  $node = node_load($nid);
+  /** @var EntityDrupalWrapper $node_wrapper An EntityMetadataWrapper for the node */
+  $node_wrapper = entity_metadata_wrapper('node', $node);
+
+  // check if the rscl_body field contains something
+  $rscl_body_field_value = $node_wrapper->rscl_body->value();
+  if (!empty($rscl_body_field_value)) {
+
+    // move the field data
+    try {
+
+      $node_wrapper->rscl_summary->set($rscl_body_field_value);
+      $node_wrapper->rscl_body->set(NULL);
+
+    } catch (EntityMetadataWrapperException $e) { /* field is not set. ignore */ }
+
+    // save the node
+    $node_wrapper->save();
+
+  }
+
+  // advance the progress bar
+  $sandbox['progress']++;
+  $sandbox['#finished'] = empty($sandbox['nids']);
+
+  return t("Processed @n nodes of type @type.", array(
+    '@n'    => $sandbox['progress'],
+    '@type' => $bundle,
+  ));
+
+}
+
+
+/**
+ * Check that the rscl_body field is empty, and delete it
+ */
+function rsc_library_update_7204() {
+
+  $field_name = "rscl_body";
+  $field = field_info_field($field_name);
+
+  if (field_has_data($field)) {
+    throw new DrupalUpdateException("There was still data left in field @field, so we didn't delete it. Please check and delete the field manually.", array(
+      '@field' => $field_name,
+    ));
+  } else {
+    field_delete_field($field_name);
+    return t("Deleted field @field", array(
+      '@field' => $field_name,
+    ));
+  }
 
 }
 
