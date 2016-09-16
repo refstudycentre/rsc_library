@@ -297,7 +297,8 @@ function rsc_library_set_format_field(&$node) {
 
   // check the type of each attached file
   foreach ($node_wrapper->rscl_attachment->getIterator() as $delta => $field_value_wrapper) {
-    $file = file_load($field_value_wrapper->value()['fid']);
+    $file_field_value = $field_value_wrapper->value();
+    $file = file_load($file_field_value->fid);
     $format = rsc_attachment_formatter_get_type($file->filemime);
     if (!in_array($format, $formats)) {
       $formats[] = $format;
