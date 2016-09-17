@@ -294,6 +294,9 @@ function rsc_library_set_format_field(&$node) {
 
   // check if the destination field exists
   if (!isset($node_wrapper->rscl_format)) {
+    drupal_set_message(t("The rscl_format field has not been set up for node type `@type`.", array(
+      '@type' => $node->type,
+    )), 'warning', FALSE);
     return;
   }
 
@@ -302,8 +305,21 @@ function rsc_library_set_format_field(&$node) {
 
   // check the type of each attached file
   foreach ($node_wrapper->rscl_attachment->getIterator() as $delta => $field_value_wrapper) {
-    $file_field_value = $field_value_wrapper->value();
-    $file = file_load($file_field_value->fid);
+
+    try {
+      $fid = $field_value_wrapper->value()->fid;
+    } catch (EntityMetadataWrapperException $e) {
+      // this means the field probably had no data.
+      // see https://www.drupal.org/node/1596594
+      continue;
+    }
+
+    if (empty($fid)) {
+      // this means the field probably had a NULL entry
+      continue;
+    }
+
+    $file = file_load($fid);
     $format = rsc_attachment_formatter_get_type($file->filemime);
     if (!in_array($format, $formats)) {
       $formats[] = $format;
@@ -311,7 +327,11 @@ function rsc_library_set_format_field(&$node) {
   }
 
   // check if the article has HTML full-text
-  if (!in_array('text', $formats) && !empty($node_wrapper->rscl_full_text->value())) {
+  if (
+    !in_array('text', $formats) &&                  // the node hasn't already been flagged as having text
+    isset($node_wrapper->rscl_full_text) &&         // an instance of rscl_full_text field exists on this node type
+    !empty($node_wrapper->rscl_full_text->value())  // there is some text in the field
+  ) {
     $formats[] = 'text';
   }
 
@@ -319,9 +339,9 @@ function rsc_library_set_format_field(&$node) {
     // set the rscl_format field
     $node_wrapper->rscl_format->set($formats);
   } catch (EntityMetadataWrapperException $e) {
-    file_put_contents("formats.txt", var_export($formats, TRUE));
-    file_put_contents("node.txt", var_export($node, TRUE));
-    throw $e;
+    drupal_set_message(t("Failed to set the rscl_format field on node @nid.", array(
+      '@nid' => $node->nid,
+    )), 'error');
   }
 
 }
