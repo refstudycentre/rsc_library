@@ -277,9 +277,9 @@ function rsc_library_update_7204() {
   $field = field_info_field($field_name);
 
   if (field_has_data($field)) {
-    throw new DrupalUpdateException("There was still data left in field @field, so we didn't delete it. Please check and delete the field manually.", array(
+    throw new DrupalUpdateException(t("There was still data left in field @field, so we didn't delete it. Please check and delete the field manually.", array(
       '@field' => $field_name,
-    ));
+    )));
   } else {
     field_delete_field($field_name);
     return t("Deleted field @field", array(
