@@ -195,6 +195,7 @@ function rsc_library_update_7203(&$sandbox) {
 
   $bundle = 'rsc_library_article';
 
+  // If this is the first time this function is invoked
   if (!isset($sandbox['progress'])) {
 
     // Get all relevant nids
@@ -217,31 +218,46 @@ function rsc_library_update_7203(&$sandbox) {
 
   }
 
-  // load the node
-  $nid = array_shift($sandbox['nids']);
-  $node = node_load($nid);
-  /** @var EntityDrupalWrapper $node_wrapper An EntityMetadataWrapper for the node */
-  $node_wrapper = entity_metadata_wrapper('node', $node);
+  // Continue the batch job
 
-  // check if the rscl_body field contains something
-  $rscl_body_field_value = $node_wrapper->rscl_body->value();
-  if (!empty($rscl_body_field_value)) {
+  /* @var int num_per_batch The number of nodes to process per batch. Should be reduced if the server experiences PHP timeouts while updating. */
+  $num_per_batch = 300;
 
-    // move the field data
-    try {
+  while ($num_per_batch--) {
+    /*
+     * Processing more than one node per batch speeds things up significantly, because it takes long to bootstrap Drupal.
+     * See this discussion: http://drupal.stackexchange.com/a/70353/8452
+     */
 
-      $node_wrapper->rscl_summary->set($rscl_body_field_value);
-      $node_wrapper->rscl_body->set(NULL);
+    // load a node
+    $nid = array_shift($sandbox['nids']);
+    $node = node_load($nid);
+    /** @var EntityDrupalWrapper $node_wrapper An EntityMetadataWrapper for the node */
+    $node_wrapper = entity_metadata_wrapper('node', $node);
 
-    } catch (EntityMetadataWrapperException $e) { /* field is not set. ignore */ }
+    // check if the rscl_body field contains something
+    $rscl_body_field_value = $node_wrapper->rscl_body->value();
+    if (!empty($rscl_body_field_value)) {
 
-    // save the node
-    $node_wrapper->save();
+      // move the field data
+      try {
+
+        $node_wrapper->rscl_summary->set($rscl_body_field_value);
+        $node_wrapper->rscl_body->set(NULL);
+
+      } catch (EntityMetadataWrapperException $e) { /* field is not set. ignore */ }
+
+      // save the node
+      $node_wrapper->save();
+
+    }
+
+    // indicate progress
+    $sandbox['progress']++;
 
   }
 
-  // advance the progress bar
-  $sandbox['progress']++;
+  // update the progress bar, or indicate completion
   $sandbox['#finished'] = empty($sandbox['nids']) ? TRUE : ($sandbox['progress'] / $sandbox['max']);
 
   return t("Processed @n nodes of type @type.", array(
