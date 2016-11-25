@@ -221,9 +221,9 @@ function rsc_library_update_7203(&$sandbox) {
   // Continue the batch job
 
   /* @var int num_per_batch The number of nodes to process per batch. Should be reduced if the server experiences PHP timeouts while updating. */
-  $num_per_batch = 300;
+  $num_per_batch = 100;
 
-  while ($num_per_batch--) {
+  while ($num_per_batch-- && !empty($sandbox['nids'])) {
     /*
      * Processing more than one node per batch speeds things up significantly, because it takes long to bootstrap Drupal.
      * See this discussion: http://drupal.stackexchange.com/a/70353/8452
