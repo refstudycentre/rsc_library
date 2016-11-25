@@ -307,19 +307,19 @@ function rsc_library_set_format_field(&$node) {
   foreach ($node_wrapper->rscl_attachment->getIterator() as $delta => $field_value_wrapper) {
 
     try {
-      $fid = $field_value_wrapper->value()->fid;
+      $fid_field_value = $field_value_wrapper->value();
     } catch (EntityMetadataWrapperException $e) {
       // this means the field probably had no data.
       // see https://www.drupal.org/node/1596594
       continue;
     }
 
-    if (empty($fid)) {
+    if (!isset($fid_field_value['fid'])) {
       // this means the field probably had a NULL entry
       continue;
     }
 
-    $file = file_load($fid);
+    $file = file_load($fid_field_value['fid']);
     $format = rsc_attachment_formatter_get_type($file->filemime);
     if (!in_array($format, $formats)) {
       $formats[] = $format;
