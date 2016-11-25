@@ -207,6 +207,7 @@ function rsc_library_update_7203(&$sandbox) {
     if (!empty($result['node'])) {
       $sandbox['nids'] = array_keys($result['node']);
       $sandbox['progress'] = 0;
+      $sandbox['max'] = count($sandbox['nids']);
     } else {
       $sandbox['#finished'] = TRUE;
       return t("There were no nodes of type @type to process.", array(
@@ -241,7 +242,7 @@ function rsc_library_update_7203(&$sandbox) {
 
   // advance the progress bar
   $sandbox['progress']++;
-  $sandbox['#finished'] = empty($sandbox['nids']);
+  $sandbox['#finished'] = empty($sandbox['nids']) ? TRUE : ($sandbox['progress'] / $sandbox['max']);
 
   return t("Processed @n nodes of type @type.", array(
     '@n'    => $sandbox['progress'],
