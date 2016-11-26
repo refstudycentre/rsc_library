@@ -18,3 +18,5 @@ dependencies[] = comment
 dependencies[] = rsc_attachment_formatter (2.x)
 
 configure = admin/structure/rsc_library
+
+version = 7.x-2.x
