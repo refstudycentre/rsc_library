@@ -194,32 +194,26 @@ function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
     return;
   }
 
-  $error = FALSE;
-  foreach($library_settings['vocabs'] as $field_short_name => $vid) {
-
-    // check if a vocabulary has been configured
-    if (!($vid > 0)) {
-      drupal_set_message($t('Could not create @field field for library @lid, because a vocabulary has not been selected yet.', array(
-        '@field' => $field_short_name,
-        '@lid' => $lid,
-      )), 'warning', FALSE);
-      $error = TRUE;
-    }
-
-  }
-  if ($error) return;
-
   // get a list of existing fields, so that we don't add duplicates:
   $field_names = array_keys(field_info_fields());
 
   // for each taxonomy reference field
-  foreach ($library_settings['vocabs'] as $field_shortname => $vid) {
+  foreach ($library_settings['vocabs'] as $field_short_name => $vid) {
+
+    // check if a vocabulary has been configured
+    if (!($vid > 0)) {
+      drupal_set_message($t('Skipped creating field `@field` for library @lid, because a vocabulary has not been selected yet.', array(
+        '@field' => $field_short_name,
+        '@lid' => $lid,
+      )), 'warning', FALSE);
+      continue; // skip this field
+    }
 
     // load the vocabulary info
     $vocabulary = taxonomy_vocabulary_load($vid);
 
     // determine what this field should be called
-    $field_name = RSC_LIBRARY_PREFIX . "_{$field_shortname}_{$vocabulary->machine_name}";
+    $field_name = RSC_LIBRARY_PREFIX . "_{$field_short_name}_{$vocabulary->machine_name}";
     if (strlen($field_name) > 32) {
       drupal_set_message(t('Cannot create field @fieldname (more than 32 characters).', array('@fieldname' => $field_name)), 'error');
       continue;
@@ -228,7 +222,7 @@ function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
     $field = array(
       'field_name' => $field_name,
       'type' => 'taxonomy_term_reference',
-      'cardinality' => $cardinality[$field_shortname],
+      'cardinality' => $cardinality[$field_short_name],
       'settings' => array(
         'allowed_values' => array(
           array(
@@ -844,6 +838,12 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
         'type' => 'taxonomy_autocomplete',
         'weight' => 4,
       ),
+      'bundles'     => array(
+        'rsc_library_article',
+        'rsc_library_link',
+        'rsc_library_request',
+        'rsc_library_book_preview',
+      ),
     ),
     'editor' => array(
       'label'       => $t('Editor'),
@@ -865,6 +865,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
         'weight' => 5,
+      ),
+      'bundles'     => array(
+        'rsc_library_request',
+        'rsc_library_book_preview',
       ),
     ),
     'publisher' => array(
@@ -888,6 +892,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
         'type' => 'taxonomy_autocomplete',
         'weight' => 7,
       ),
+      'bundles'     => array(
+        'rsc_library_request',
+        'rsc_library_book_preview',
+      ),
     ),
     'source' => array(
       'label'       => $t('Source'),
@@ -909,6 +917,10 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
         'weight' => 9,
+      ),
+      'bundles'     => array(
+        'rsc_library_article',
+        'rsc_library_link',
       ),
     ),
     'difficulty' => array(
@@ -936,6 +948,12 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
         'type' => 'options_buttons',
         'weight' => 14,
       ),
+      'bundles'     => array(
+        'rsc_library_article',
+        'rsc_library_link',
+        'rsc_library_request',
+        'rsc_library_book_preview',
+      ),
     ),
     'tag' => array(
       'label'       => $t('Tags'),
@@ -955,6 +973,12 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       'widget'      => array(
         'type' => 'taxonomy_autocomplete',
         'weight' => 20,
+      ),
+      'bundles'     => array(
+        'rsc_library_article',
+        'rsc_library_link',
+        'rsc_library_request',
+        'rsc_library_book_preview',
       ),
     ),
     'category' => array(
@@ -984,70 +1008,52 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
         ),
         'weight' => 21,
       ),
+      'bundles'     => array(
+        'rsc_library_article',
+        'rsc_library_link',
+        'rsc_library_request',
+        'rsc_library_book_preview',
+      ),
     ),
   );
 
-  // first check that each field has an assigned vocabulary
-  $error = FALSE;
-  foreach($taxonomy_reference_field_instances as $field_short_name => $field_info) {
+  // Make a list of field instances for each content type, because not all
+  // content types use all fields.
+  $field_instances_by_type = array(
+    'rsc_library_article'      => array(),
+    'rsc_library_link'         => array(),
+    'rsc_library_request'      => array(),
+    'rsc_library_book_preview' => array(),
+  );
 
+  foreach($taxonomy_reference_field_instances as $field_short_name => &$field_instance) {
+
+    // check if a vocabulary has been configured for this field
     if (empty($library_settings['vocabs'][$field_short_name]) || !($library_settings['vocabs'][$field_short_name] > 0)) {
-      drupal_set_message($t('Could not create @field field for library @lid, because a vocabulary has not been selected yet.', array(
+      drupal_set_message($t('Skipped creating field `@field` for library @lid, because a vocabulary has not been selected yet.', array(
         '@field' => $field_short_name,
         '@lid' => $lid,
       )), 'warning', FALSE);
-      $error = TRUE;
+      continue; // skip this field
     }
 
-  }
-  if ($error) return;
-
-  // for each taxonomy reference field used by this library
-  foreach($library_settings['vocabs'] as $field_short_name => $vid) {
+    // If we are here, then a vocabulary IS configured for this field
+    $vid = $library_settings['vocabs'][$field_short_name];
 
     // load the vocabulary
     $vocab = taxonomy_vocabulary_load($vid);
 
     // determine what this field is called
     $field_name = RSC_LIBRARY_PREFIX . "_{$field_short_name}_{$vocab->machine_name}";
-    $taxonomy_reference_field_instances[$field_short_name]['field_name'] = $field_name;
+    $field_instance['field_name'] = $field_name;
+
+    // add the field to the content types' list of fields
+    foreach($field_instance['bundles'] as $bundle) {
+      $field_instances_by_type[$bundle][] = &$field_instance;
+    }
+    unset($field_instance['bundles']);
 
   }
-
-  // Make a list of field instances for each content type, because not all
-  // content types use all fields.
-  $field_instances_by_type = array(
-    'rsc_library_article' => array(
-      $taxonomy_reference_field_instances['author'],
-      $taxonomy_reference_field_instances['source'],
-      $taxonomy_reference_field_instances['tag'],
-      $taxonomy_reference_field_instances['category'],
-      $taxonomy_reference_field_instances['difficulty'],
-    ),
-    'rsc_library_link' => array(
-      $taxonomy_reference_field_instances['author'],
-      $taxonomy_reference_field_instances['source'],
-      $taxonomy_reference_field_instances['tag'],
-      $taxonomy_reference_field_instances['category'],
-      $taxonomy_reference_field_instances['difficulty'],
-    ),
-    'rsc_library_request' => array(
-      $taxonomy_reference_field_instances['author'],
-      $taxonomy_reference_field_instances['editor'],
-      $taxonomy_reference_field_instances['publisher'],
-      $taxonomy_reference_field_instances['tag'],
-      $taxonomy_reference_field_instances['category'],
-      $taxonomy_reference_field_instances['difficulty'],
-    ),
-    'rsc_library_book_preview' => array(
-      $taxonomy_reference_field_instances['author'],
-      $taxonomy_reference_field_instances['editor'],
-      $taxonomy_reference_field_instances['publisher'],
-      $taxonomy_reference_field_instances['tag'],
-      $taxonomy_reference_field_instances['category'],
-      $taxonomy_reference_field_instances['difficulty'],
-    ),
-  );
 
   // add the field instances to the content types
   foreach ($field_instances_by_type as $type => $field_instances) {
