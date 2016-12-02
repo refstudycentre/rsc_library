@@ -193,9 +193,9 @@ function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
     drupal_set_message($t('Could not create fields for library @lid, because its vocabulary settings have not been configured yet.', array('@lid' => $lid)), 'warning', FALSE);
     return;
   }
-  foreach($library_settings['vocabs'] as $field_short_name => $vid) {
 
-    $error = FALSE;
+  $error = FALSE;
+  foreach($library_settings['vocabs'] as $field_short_name => $vid) {
 
     // check if a vocabulary has been configured
     if (!($vid > 0)) {
@@ -206,9 +206,8 @@ function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
       $error = TRUE;
     }
 
-    if ($error) return;
-
   }
+  if ($error) return;
 
   // get a list of existing fields, so that we don't add duplicates:
   $field_names = array_keys(field_info_fields());
@@ -989,9 +988,8 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
   );
 
   // first check that each field has an assigned vocabulary
+  $error = FALSE;
   foreach($taxonomy_reference_field_instances as $field_short_name => $field_info) {
-
-    $error = FALSE;
 
     if (empty($library_settings['vocabs'][$field_short_name]) || !($library_settings['vocabs'][$field_short_name] > 0)) {
       drupal_set_message($t('Could not create @field field for library @lid, because a vocabulary has not been selected yet.', array(
@@ -1001,9 +999,8 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       $error = TRUE;
     }
 
-    if ($error) return;
-
   }
+  if ($error) return;
 
   // for each taxonomy reference field used by this library
   foreach($library_settings['vocabs'] as $field_short_name => $vid) {
