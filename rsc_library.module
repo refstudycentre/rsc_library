@@ -29,12 +29,27 @@ function rsc_library_menu() {
   $items = array();
 
   $items['admin/structure/rsc_library'] = array(
-    'title' => t('RSC Libraries'),
-    'description' => t('Configure libraries defined by the rsc_library module.'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('rsc_library_settings'),
-    'file' => 'rsc_library.admin.inc',
+    'title'            => t('RSC Libraries'),
+    'description'      => t('Configure libraries defined by the rsc_library module.'),
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('rsc_library_settings'),
+    'file'             => 'rsc_library.admin.inc',
     'access arguments' => array('administer rsc_library'),
+  );
+
+  $items['admin/structure/rsc_library/settings'] = array(
+    'title' => t('Settings'),
+    'type'             => MENU_DEFAULT_LOCAL_TASK,
+    'weight'           => -100,
+  );
+
+  $items['admin/structure/rsc_library/actions'] = array(
+    'title' => t('Actions'),
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('rsc_library_actions'),
+    'file'             => 'rsc_library.admin.inc',
+    'access arguments' => array('administer rsc_library'),
+    'type'             => MENU_LOCAL_TASK
   );
 
   return $items;

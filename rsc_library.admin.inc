@@ -6,39 +6,8 @@ require_once "rsc_library.common.inc";
 /**
  * Form builder for the module settings page
  */
-function rsc_library_settings() {
-  $form = array();
-  
-  /* collect info from site*/
-  $vocabs = taxonomy_get_vocabularies();
-  $vocab_options = array('-1' => t('None'));
-  foreach($vocabs as $vid => $vocab) {
-    $vocab_options[$vid] = $vocab->name;
-  }
-  
-  /* collect info from this module */
-//  $default_settings = array();
-  //$settings = variable_get('rsc_library',$default_settings);
-  
-  /* build the form */
-  $form['#tree'] = TRUE; // save the whole thing as an array
+function rsc_library_settings($form, &$form_state) {
 
-  $form['rsc_library']['actions'] = array(
-    '#type' => 'radios',
-    '#title' => 'Actions:',
-    '#default_value' => 'Nothing',
-    '#options' => array(
-      0 => 'Nothing',
-      'content_type_reset' => 'Reset the content type settings.',
-      'fields_setup' => 'Create missing fields and instances, and update existing ones.',
-      'fields_cleanup' => 'Delete (clean up) unused fields',
-    ),
-    '#description' => t('Choose an optional action to perform when submitting.'),
-    'content_type_reset' => array('#description' => t("Default settings include: unpublished by default, comments open, etc.")),
-    'fields_setup' => array('#description' => t("Old fields and field instances will not be deleted automatically. If you are experiencing trouble with a field or field instance, delete it, and then choose this option. YOU WILL LOSE ALL VALUES CONTAINED IN EVERY INSTANCE OF A FIELD IF YOU DELETE IT.")),
-    'fields_cleanup' => array('#description' => t("This will delete all fields created by rsc_library which do not have any instances (i.e. are not linked to a content type any more). YOU WILL LOSE ALL DATA IN THESE FIELDS.")),
-  );
-  
   $links = array();
   $links["admin/structure/types/manage/rsc-library"] = t('Edit "library" content type');
   $links["admin/structure/types/manage/rsc-library-article"] = t('Edit "article" content type');
@@ -55,17 +24,64 @@ function rsc_library_settings() {
     '#theme'  => 'item_list',
     '#items'  => $link_items,
   );
-  
-  $form['rsc_library']['links'] = array(
+
+  $form['links'] = array(
     '#type'   => 'markup',
     '#markup' => drupal_render($link_list),
     '#prefix' => '<div class="form-item">',
     '#suffix' => '</div>',
   );
-  
-  $form['#submit'][] = 'rsc_library_settings_submit';
 
-  return system_settings_form($form);
+  return $form;
+
+}
+
+
+/**
+ * @param $form
+ * @param $form_state
+ */
+function rsc_library_settings_validate($form, &$form_state) {
+
+}
+
+
+/**
+ * @param $form
+ * @param $form_state
+ */
+function rsc_library_settings_submit($form, &$form_state) {
+
+}
+
+
+/**
+ * Form builder for the module actions page
+ */
+function rsc_library_actions($form, &$form_state) {
+
+  $form['actions'] = array(
+    '#type' => 'radios',
+    '#title' => 'Actions:',
+    '#default_value' => 'Nothing',
+    '#options' => array(
+      0 => 'Nothing',
+      'content_type_reset' => 'Reset the content type settings.',
+      'fields_setup' => 'Create missing fields and instances, and update existing ones.',
+      'fields_cleanup' => 'Delete (clean up) unused fields',
+    ),
+    '#description' => t('Choose an optional action to perform when submitting.'),
+    'content_type_reset' => array('#description' => t("Default settings include: unpublished by default, comments open, etc.")),
+    'fields_setup' => array('#description' => t("Old fields and field instances will not be deleted automatically. If you are experiencing trouble with a field or field instance, delete it, and then choose this option. YOU WILL LOSE ALL VALUES CONTAINED IN EVERY INSTANCE OF A FIELD IF YOU DELETE IT.")),
+    'fields_cleanup' => array('#description' => t("This will delete all fields created by rsc_library which do not have any instances (i.e. are not linked to a content type any more). YOU WILL LOSE ALL DATA IN THESE FIELDS.")),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t("Do it!"),
+  );
+
+  return $form;
 
 }
 
@@ -73,36 +89,38 @@ function rsc_library_settings() {
 /**
  * Submit handler for the module settings page
  */
-function rsc_library_settings_submit($form, &$form_state) {
-  
-  if (!empty($form_state['values']['rsc_library'])) {
-    $settings = $form_state['values']['rsc_library'];
-      
-    switch($settings['actions']) {
-      case 'content_type_reset':
-        
-        module_load_include('inc','rsc_library','rsc_library.common');
-        rsc_library_content_type_settings();
-        drupal_set_message("Settings for content types rsc_library_* have been reset.");
-        
-        break;
-      case 'fields_cleanup':
-        
-        module_load_include('inc','rsc_library','rsc_library.field');
-        rsc_library_field__cleanup();
-        drupal_set_message("Unused fields from rsc_library have been deleted.");
-        
-        break;
-      case 'fields_setup':
-        
-        module_load_include('inc','rsc_library','rsc_library.field');
-        rsc_library_field__setup_fields();
-        rsc_library_field__setup_field_instances();
-        drupal_set_message("Fields and instances for rsc_library have been created and/or updated.");
-        
-        break;
-    }
-      
+function rsc_library_actions_submit($form, &$form_state) {
+
+  if (empty($form_state['values'])) {
+    drupal_set_message(t("Nothing to do."));
+    return;
+  }
+
+  $settings = $form_state['values'];
+
+  switch($settings['actions']) {
+    case 'content_type_reset':
+
+      module_load_include('inc','rsc_library','rsc_library.common');
+      rsc_library_content_type_settings();
+      drupal_set_message("Settings for content types rsc_library_* have been reset.");
+
+      break;
+    case 'fields_cleanup':
+
+      module_load_include('inc','rsc_library','rsc_library.field');
+      rsc_library_field__cleanup();
+      drupal_set_message("Unused fields from rsc_library have been deleted.");
+
+      break;
+    case 'fields_setup':
+
+      module_load_include('inc','rsc_library','rsc_library.field');
+      rsc_library_field__setup_fields();
+      rsc_library_field__setup_field_instances();
+      drupal_set_message("Fields and instances for rsc_library have been created and/or updated.");
+
+      break;
   }
 }
 
