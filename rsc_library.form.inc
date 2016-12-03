@@ -142,25 +142,18 @@ function rsc_library_form_request_content_submit($form, &$form_state) {
  */
 function rsc_library_form_pending_requests($form, &$form_state) {
 
-  $result = db_query(<<<EOQ
+  $form_state['db_result'] = db_query(<<<EOQ
 select *
 from rsc_library_request_log as l
 inner join (select rlid, max(l.timestamp) as t from rsc_library_request_log l group by rid) as x on l.rlid=x.rlid
 inner join rsc_library_request as r on r.rid=l.rid
 EOQ
-  );
-
-  $header = array(
-    'user'  => t('User'),
-    'email' => t('Email address'),
-    'nid'   => t("Requested node"),
-    'time'  => t("Time stamp"),
-  );
+  )->fetchAllAssoc('rid');
 
   $options = array();
 
-  foreach ($result as $record) {
-    $options[] = array(
+  foreach ($form_state['db_result'] as $record) {
+    $options[$record->rid] = array(
       'user'  => $record->user ? l($record->user, 'user/'.$record->user) : "anon.",
       'email' => $record->email,
       'nid'   => l($record->nid, 'node/'.$record->nid),
@@ -171,30 +164,40 @@ EOQ
   $form['pending'] = array(
     '#title' => t("Pending requests"),
     '#type' => 'tableselect',
-    '#header' => $header,
+    '#header' => array(
+      'user'  => t('User'),
+      'email' => t('Email address'),
+      'nid'   => t("Requested node"),
+      'time'  => t("Time stamp"),
+    ),
     '#options' => $options,
+    '#empty' => t('No pending requests.'),
   );
 
-  $form['actions'] = array(
-    'accept' => array(
-      '#prefix' => '<p>',
-      '#type' => 'submit',
-      '#value' => t("Accept"),
-      '#suffix' => t("Send the requested content to the respective users.").'</p>',
-    ),
-    'ignore' => array(
-      '#prefix' => '<p>',
-      '#type' => 'submit',
-      '#value' => t("Ignore"),
-      '#suffix' => t("Ignore the request. Don't do anything else.").'</p>',
-    ),
-    'reject' => array(
-      '#prefix' => '<p>',
-      '#type' => 'submit',
-      '#value' => t("Reject"),
-      '#suffix' => t("Notify the user that their request was rejected.").'</p>',
-    ),
-  );
+  if (count($options)) {
+
+    $form['actions'] = array(
+      'accept' => array(
+        '#prefix' => '<p>',
+        '#type' => 'submit',
+        '#value' => t("Accept"),
+        '#suffix' => t("Send the requested content to the respective users.").'</p>',
+      ),
+      'ignore' => array(
+        '#prefix' => '<p>',
+        '#type' => 'submit',
+        '#value' => t("Ignore"),
+        '#suffix' => t("Ignore the request. Don't do anything else.").'</p>',
+      ),
+      'reject' => array(
+        '#prefix' => '<p>',
+        '#type' => 'submit',
+        '#value' => t("Reject"),
+        '#suffix' => t("Notify the user that their request was rejected.").'</p>',
+      ),
+    );
+
+  }
 
   return $form;
 
@@ -202,11 +205,49 @@ EOQ
 
 
 function rsc_library_form_pending_requests_validate($form, &$form_state) {
-
+  if (!count(array_keys($form_state['values']['pending'], 1))) {
+    form_set_error('pending', t("Please select one or more items in the table."));
+  }
 }
 
 
 function rsc_library_form_pending_requests_submit($form, &$form_state) {
-  dpm($form_state);
+
+  dpm($form_state, "form_state");
+  dpm(array_keys($form_state['values']['pending'], 1), "selected rids");
+
+  $rids = array_keys($form_state['values']['pending'], 1);
+
+  // Check which button was clicked
+  switch($form_state['values']['op']) {
+    case $form_state['values']['accept']:
+
+      foreach($rids as $rid) {
+        // log accept action
+        $rlid = db_insert('rsc_library_request_log')->fields(array(
+          'rid'       => $rid,
+          'action'    => 'accept',
+          'user'      => $form_state['db_result'][$rid]->user,
+          'timestamp' => REQUEST_TIME,
+        ))->execute();
+
+        if (!$rlid) {
+          drupal_set_message(t("Failed to log acceptance."), 'error', FALSE);
+          return; // TODO: or continue? move to separate function...
+        }
+
+        // TODO: send email with attachment to user
+
+      }
+
+      break;
+    case $form_state['values']['ignore']:
+      break;
+    case $form_state['values']['reject']:
+      break;
+    default:
+      drupal_set_message("Did nothing.");
+  }
+
 }
 
