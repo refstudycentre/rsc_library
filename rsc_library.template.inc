@@ -57,7 +57,8 @@ function rsc_library_preprocess_node(&$variables) {
       $editor_field            = rsc_library_get_field('editor',            $variables['content']);
       $publisher_field         = rsc_library_get_field('publisher',         $variables['content']);
       $page_range_field        = rsc_library_get_field('page_range',        $variables['content']);
-      $element_field           = rsc_library_get_field('book_title',        $variables['content']);
+      $book_title_field        = rsc_library_get_field('book_title',        $variables['content']);
+      $attachment_field        = rsc_library_get_field('attachment',        $variables['content']);
       $link_to_chapter_field   = rsc_library_get_field('link_to_chapter',   $variables['content']);
       $link_to_publisher_field = rsc_library_get_field('link_to_publisher', $variables['content']);
       $link_to_buy_field       = rsc_library_get_field('link_to_buy',       $variables['content']);
@@ -69,7 +70,7 @@ function rsc_library_preprocess_node(&$variables) {
       $editor     = render($editor_field);
       $publisher  = render($publisher_field);
       $page_range = render($page_range_field);
-      $book_title = render($element_field);
+      $book_title = render($book_title_field);
 
       // for library content and links
       if (in_array($variables['type'], array(
@@ -153,6 +154,15 @@ function rsc_library_preprocess_node(&$variables) {
 
         // make a list of links (to chapter, to publisher, and to buy)
         $book_links = array();
+        if (!empty($attachment_field)) {
+          // Quick fix: skip the rendering, and just get a direct link to the file, so that it looks the same as the rest of this list
+          // foreach (array_keys($attachment_field['#items']) as $delta) {
+          //   $book_links[] = render($attachment_field[$delta]);
+          // }
+          foreach($attachment_field['#items'] as $file) {
+            $book_links[] = l(t("View chapter"), file_create_url($file['uri']));
+          }
+        }
         if (!empty($link_to_chapter_field)) {
           foreach (array_keys($link_to_chapter_field['#items']) as $delta) {
             $book_links[] = render($link_to_chapter_field[$delta]);
