@@ -60,9 +60,14 @@ function rsc_library_content_type_settings() {
     variable_set("node_preview_{$type}", 1);                 // Optional preview
     variable_set("node_options_{$type}", array());           // default unpublished
     variable_set("node_submitted_{$type}", 0);               // Unset 'Display author and date information'.
-    variable_set("comment_{$type}", COMMENT_NODE_OPEN);      // open comments
     variable_set("menu_options_{$type}", array());           // no available menus
   }
+
+  // comments:
+  variable_set("comment_rsc_library_article", COMMENT_NODE_OPEN);
+  variable_set("comment_rsc_library_link", COMMENT_NODE_OPEN);
+  variable_set("comment_rsc_library_request", COMMENT_NODE_CLOSED);
+  variable_set("comment_rsc_library_book_preview", COMMENT_NODE_OPEN);
 
   // for the "rsc_library" content type
   variable_set("node_preview_rsc_library", 1);               // Optional preview
