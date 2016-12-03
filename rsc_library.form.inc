@@ -142,11 +142,13 @@ function rsc_library_form_request_content_submit($form, &$form_state) {
  */
 function rsc_library_form_pending_requests($form, &$form_state) {
 
+  // Get the latest action performed on each request id, along with the node, email and user info, but only if the last action was 'request'
   $form_state['db_result'] = db_query(<<<EOQ
 select *
-from rsc_library_request_log as l
-inner join (select rlid, max(l.timestamp) as t from rsc_library_request_log l group by rid) as x on l.rlid=x.rlid
-inner join rsc_library_request as r on r.rid=l.rid
+from (select rid, max(timestamp) as t from rsc_library_request_log group by rid) as x
+inner join rsc_library_request_log as l on x.rid=l.rid and x.t=l.timestamp
+inner join rsc_library_request as r on l.rid=r.rid
+where action='request'
 EOQ
   )->fetchAllAssoc('rid');
 
@@ -205,7 +207,7 @@ EOQ
 
 
 function rsc_library_form_pending_requests_validate($form, &$form_state) {
-  if (!count(array_keys($form_state['values']['pending'], 1))) {
+  if (!count(array_keys($form_state['values']['pending'], TRUE))) {
     form_set_error('pending', t("Please select one or more items in the table."));
   }
 }
@@ -213,16 +215,14 @@ function rsc_library_form_pending_requests_validate($form, &$form_state) {
 
 function rsc_library_form_pending_requests_submit($form, &$form_state) {
 
-  dpm($form_state, "form_state");
-  dpm(array_keys($form_state['values']['pending'], 1), "selected rids");
-
-  $rids = array_keys($form_state['values']['pending'], 1);
+  $rids = array_keys($form_state['values']['pending'], TRUE);
 
   // Check which button was clicked
   switch($form_state['values']['op']) {
     case $form_state['values']['accept']:
 
       foreach($rids as $rid) {
+
         // log accept action
         $rlid = db_insert('rsc_library_request_log')->fields(array(
           'rid'       => $rid,
@@ -236,7 +236,24 @@ function rsc_library_form_pending_requests_submit($form, &$form_state) {
           return; // TODO: or continue? move to separate function...
         }
 
-        // TODO: send email with attachment to user
+        // Send email to user. TODO: move this to a batch job which runs on cron
+
+//        drupal_mail(
+//
+//        );
+
+        // log send_content action
+        $rlid = db_insert('rsc_library_request_log')->fields(array(
+          'rid'       => $rid,
+          'action'    => 'send_content',
+          'user'      => $form_state['db_result'][$rid]->user,
+          'timestamp' => REQUEST_TIME,
+        ))->execute();
+
+        if (!$rlid) {
+          drupal_set_message(t("Failed to log sending of email."), 'error', FALSE);
+          return; // TODO: or continue? move to separate function...
+        }
 
       }
 

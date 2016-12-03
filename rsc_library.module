@@ -437,7 +437,35 @@ EOT;
         'langcode' => $langcode,
       ));
 
-      dpm($message);
+      break;
+    case 'request_accepted':
+
+      $reply_to = variable_get('rsc_library_request_feedback_email');
+      if (!valid_email_address($reply_to)) {
+        drupal_set_message(t("Email address for feedback from requested content has not been configured."), 'warning');
+
+        $reply_to = variable_get('site_mail');
+        if (!valid_email_address($reply_to)) {
+          drupal_set_message(t("Site email address has not been configured."), 'warning');
+        }
+      }
+
+      $message['headers']['Return-Path'] = $reply_to;
+
+      $message['subject'] = ''; // TODO: node title
+
+      $body = <<<EOT
+
+TODO: intro message
+TODO: attachment: http://drupal.stackexchange.com/a/143571/8452
+
+EOT;
+      $message['body'][] = t($body, array(
+
+      ), array(
+        'langcode' => $langcode,
+      ));
+
       break;
 
   }
