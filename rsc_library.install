@@ -54,6 +54,9 @@ function rsc_library_install() {
 
   // Assign the permissions to library staff
   _rsc_library_grant_permissions($role->rid, $permissions);
+
+  // Populate the rsc_library_request_action table
+  rsc_library_request_action_table_populate(TRUE);
   
 }
 
@@ -96,6 +99,50 @@ function _rsc_library_grant_permissions($rid, array $permissions = array()) {
   // Clear the user access cache.
   drupal_static_reset('user_access');
   drupal_static_reset('user_role_permissions');
+}
+
+
+/**
+ * Populate the rsc_library_request_action table
+ *
+ * @param bool $truncate Clear the table before inserting records
+ */
+function rsc_library_request_action_table_populate($truncate = FALSE) {
+
+  $table_name = 'rsc_library_request_action';
+
+  if ($truncate) {
+    db_truncate($table_name)->execute();
+  }
+
+  $values = array(
+    array(
+      'action'  => 'request',
+      'description' => 'User requests content.',
+    ),
+    array(
+      'action'  => 'reject',
+      'description' => 'Admin rejects request.',
+    ),
+    array(
+      'action'  => 'accept',
+      'description' => 'Admin accepts request.',
+    ),
+    array(
+      'action'  => 'send_content',
+      'description' => 'Website sends email with content.',
+    ),
+    array(
+      'action'  => 'send',
+      'description' => 'Website sends email.',
+    ),
+  );
+  $query = db_insert($table_name)->fields(array('action', 'description'));
+  foreach ($values as $record) {
+    $query->values($record);
+  }
+  $query->execute();
+
 }
 
 
@@ -162,9 +209,9 @@ function rsc_library_schema() {
           'not null' => TRUE,
         ),
         'action' => array(
-          'description' => 'raid: Which action was performed?',
-          'type' => 'int',
-          'unsigned' => TRUE,
+          'description' => 'Which action was performed?',
+          'type' => 'varchar',
+          'length' => 20,
           'not null' => TRUE,
         ),
         'user' => array(
@@ -190,7 +237,7 @@ function rsc_library_schema() {
         ),
         'rsc_library_request_action' => array(
           'table' => 'rsc_library_request_action',
-          'columns' => array('action' => 'raid'),
+          'columns' => array('action' => 'action'),
         ),
         'users' => array(
           'table' => 'users',
@@ -203,14 +250,8 @@ function rsc_library_schema() {
     'rsc_library_request_action' => array(
       'description' => 'List of possible actions on requests',
       'fields' => array(
-        'raid' => array(
-          'description' => 'Request Action ID',
-          'type' => 'serial',
-          'unsigned' => TRUE,
-          'not null' => TRUE,
-        ),
-        'short_name' => array(
-          'description' => 'Describe the action in one word.',
+        'action' => array(
+          'description' => 'Request Action ID. Describe the action in one word.',
           'type' => 'varchar',
           'length' => 20,
           'not null' => TRUE,
@@ -222,10 +263,7 @@ function rsc_library_schema() {
           'not null' => TRUE,
         ),
       ),
-      'unique keys' => array(
-        'raid' => array('raid'),
-      ),
-      'primary key' => array('raid'),
+      'primary key' => array('action'),
     ),
 
   );
@@ -443,9 +481,10 @@ function rsc_library_update_7206() {
 
 
 /**
- * Create rsc_library_request_action table
+ * Create and populate rsc_library_request_action table
  */
 function rsc_library_update_7207() {
   $schema = rsc_library_schema();
   db_create_table('rsc_library_request_action', $schema['rsc_library_request_action']);
+  rsc_library_request_action_table_populate(TRUE);
 }
