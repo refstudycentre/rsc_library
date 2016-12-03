@@ -8,6 +8,19 @@ require_once "rsc_library.common.inc";
  */
 function rsc_library_settings($form, &$form_state) {
 
+  $form['rsc_library_request_notify_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email address for notifications about new content requests:'),
+    '#maxlength' => 255,
+    '#default_value' => variable_get('rsc_library_request_notify_email', ''),
+    '#required' => TRUE,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t("Save"),
+  );
+
   $links = array();
   $links["admin/structure/types/manage/rsc-library"] = t('Edit "library" content type');
   $links["admin/structure/types/manage/rsc-library-article"] = t('Edit "article" content type');
@@ -42,7 +55,9 @@ function rsc_library_settings($form, &$form_state) {
  * @param $form_state
  */
 function rsc_library_settings_validate($form, &$form_state) {
-
+  if (!valid_email_address($form_state['values']['rsc_library_request_notify_email'])) {
+    form_set_error('rsc_library_request_notify_email', t('You must enter a valid e-mail address.'));
+  }
 }
 
 
@@ -51,7 +66,7 @@ function rsc_library_settings_validate($form, &$form_state) {
  * @param $form_state
  */
 function rsc_library_settings_submit($form, &$form_state) {
-
+  variable_set('rsc_library_request_notify_email', $form_state['values']['rsc_library_request_notify_email']);
 }
 
 
