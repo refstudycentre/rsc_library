@@ -109,7 +109,7 @@ function rsc_library_form_request_content_submit($form, &$form_state) {
 
   // Notify administrator
   $to_email = variable_get('rsc_library_request_notify_email');
-  $from_email = variable_get('site_mail', '');
+  $from_email = variable_get('site_mail');
 
   if (!valid_email_address($to_email)) {
     watchdog('rsc_library', "Email address for notifications about new requests has not been configured.");
