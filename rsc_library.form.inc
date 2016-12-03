@@ -20,11 +20,6 @@ function rsc_library_form_request_content($form, &$form_state, $nid) {
     '#required' => TRUE,
   );
 
-  $form['uid'] = array(
-    '#type' => 'value',
-    '#value' => $user->uid,
-  );
-
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Request content'),
@@ -54,7 +49,9 @@ function rsc_library_form_request_content_validate($form, &$form_state) {
  */
 function rsc_library_form_request_content_submit($form, &$form_state) {
 
-  $uid = (int) $form_state['values']['uid'];
+  global $user;
+
+  $uid = (int) $user->uid;
   $nid = (int) $form_state['build_info']['args'][0];
   $email = $form_state['values']['mail'];
 
@@ -109,5 +106,32 @@ function rsc_library_form_request_content_submit($form, &$form_state) {
   drupal_set_message(t("Your request has been logged. Ticket number: @n", array(
     '@n' => $rid,
   )));
+
+  // Notify administrator
+  $to_email = variable_get('rsc_library_request_notify_email');
+  $from_email = variable_get('site_mail', '');
+
+  if (!valid_email_address($to_email)) {
+    watchdog('rsc_library', "Email address for notifications about new requests has not been configured.");
+    return;
+  }
+
+  if (!valid_email_address($from_email)) {
+    watchdog('rsc_library', "Site email address has not been configured.");
+    return;
+  }
+
+  drupal_mail(
+    'rsc_library',
+    'new_request',
+    $to_email,
+    user_preferred_language($user),
+    array(
+      'user_email' => $email,
+      'nid' => $nid,
+      'date' => strftime("%Y%m%d", REQUEST_TIME),
+    ),
+    $from_email
+  );
 
 }

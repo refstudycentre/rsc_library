@@ -375,3 +375,44 @@ function rsc_library_theme_registry_alter(&$theme_registry) {
   }
 
 }
+
+
+/**
+ * Implements hook_mail().
+ * https://api.drupal.org/api/drupal/modules!system!system.api.php/function/hook_mail/7.x
+ */
+function rsc_library_mail($key, &$message, $params) {
+
+  $langcode = $message['language']->language;
+
+  switch ($key) {
+    case 'new_request':
+
+      $message['headers']['Return-Path'] = $params['user_email'];
+
+      $message['subject'] = t('CL article request on @date', array(
+        '@date' => $params['date'],
+      ), array(
+        'langcode' => $langcode,
+      ));
+
+      $body = <<<EOT
+
+From: @email
+
+Node ID: @nid
+
+EOT;
+      $message['body'][] = t($body, array(
+        '@email' => $params['user_email'],
+        '@nid' => $params['nid'],
+      ), array(
+        'langcode' => $langcode,
+      ));
+
+      dpm($message);
+      break;
+
+  }
+
+}
