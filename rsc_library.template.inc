@@ -1,5 +1,25 @@
 <?php
 
+
+/**
+ * Implements hook_node_view_alter().
+ */
+function rsc_library_node_view_alter(&$build) {
+
+  /*
+   * For requestable content:
+   */
+  if ($build['#bundle'] == 'rsc_library_request' && $build['#view_mode'] == 'full') {
+
+    module_load_include('inc', 'rsc_library', 'rsc_library.form');
+    $build['rsc_library_form_request_content'] = drupal_get_form('rsc_library_form_request_content', $build['#node']->nid);
+    $build['rsc_library_form_request_content']['#weight'] = 1000;
+
+  }
+
+}
+
+
 /**
  * Implements hook_preprocess_HOOK(&$variables)
  * https://api.drupal.org/api/drupal/modules!system!theme.api.php/function/hook_preprocess_HOOK/7
