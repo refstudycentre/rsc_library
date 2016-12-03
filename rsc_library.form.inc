@@ -20,6 +20,11 @@ function rsc_library_form_request_content($form, &$form_state, $nid) {
     '#required' => TRUE,
   );
 
+  $form['uid'] = array(
+    '#type' => 'value',
+    '#value' => $user->uid,
+  );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Request content'),
@@ -48,5 +53,61 @@ function rsc_library_form_request_content_validate($form, &$form_state) {
  * @param $form_state
  */
 function rsc_library_form_request_content_submit($form, &$form_state) {
+
+  $uid = (int) $form_state['values']['uid'];
+  $nid = (int) $form_state['build_info']['args'][0];
+  $email = $form_state['values']['mail'];
+
+  // Try to retrieve a request ID for this nid & mail
+  $rid = db_query("select rid from rsc_library_request where nid=:nid and email=:email", array(
+    ':nid' => $nid,
+    ':email' => $email
+  ))->fetchField(0);
+
+  if (empty($rid)) {
+    // Try to create a request ID for the nid & mail
+    $rid = db_insert('rsc_library_request')->fields(array(
+      'nid' => $nid,
+      'email' => $email,
+    ))->execute();
+
+    if (empty($rid)) {
+      drupal_set_message(t("Failed to submit request"), 'error', FALSE);
+      return;
+    }
+  }
+
+  // check if an existing request is pending
+
+  // Find the last action that was performed on this request ID
+  $last_action = db_query("select action from rsc_library_request_log where rid=:rid order by timestamp desc limit 1", array(
+    ':rid' => $rid,
+  ))->fetchField(0);
+
+  if ($last_action == 'request') {
+
+    drupal_set_message(t("You have already requested this content. Ticket number: @n", array(
+      '@n' => $rid,
+    )));
+    return;
+
+  }
+
+  // log request action
+  $rlid = db_insert('rsc_library_request_log')->fields(array(
+    'rid'       => $rid,
+    'action'    => 'request',
+    'user'      => $uid,
+    'timestamp' => REQUEST_TIME,
+  ))->execute();
+
+  if (!$rlid) {
+    drupal_set_message(t("Failed to submit request"), 'error', FALSE);
+    return;
+  }
+
+  drupal_set_message(t("Your request has been logged. Ticket number: @n", array(
+    '@n' => $rid,
+  )));
 
 }
