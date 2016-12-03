@@ -100,6 +100,139 @@ function _rsc_library_grant_permissions($rid, array $permissions = array()) {
 
 
 /**
+ * Database schema
+ * Implements hook_schema()
+ * See:
+ * - https://api.drupal.org/api/drupal/modules!system!system.api.php/function/hook_schema/7.x
+ * - https://www.drupal.org/docs/7/api/schema-api/quick-start-guide
+ */
+function hook_schema() {
+
+  return array(
+
+    'rsc_library_request' => array(
+      'description' => 'Requested nodes, and who requested it.',
+      'fields' => array(
+        'rid' => array(
+          'description' => 'Request ID',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'nid' => array(
+          'description' => 'The ID of the requested node.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'email' => array(
+          'description' => 'The email address of the user requesting the content.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+      ),
+      'unique keys' => array(
+        'nid_email' => array('nid', 'email'), // The history of interactions between a specific user and a specific node should be kept together under one `rid`.
+        'rid' => array('rid'),
+      ),
+      // For documentation purposes only; foreign keys are not created in the database.
+      'foreign keys' => array(
+        'node' => array(
+          'table' => 'node',
+          'columns' => array('nid' => 'nid'),
+        ),
+      ),
+      'primary key' => array('rid'),
+    ),
+
+    'rsc_library_request_log' => array(
+      'description' => 'History of request actions',
+      'fields' => array(
+        'rlid' => array(
+          'description' => 'Request Log ID',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'rid' => array(
+          'description' => 'On which request was the action performed?',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'action' => array(
+          'description' => 'What actions was performed?',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'user' => array(
+          'description' => 'Who performed the action?',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'timestamp' => array(
+          'description' => 'When was the action performed?',
+          'type' => '',
+          'not null' => TRUE,
+        ),
+      ),
+      'unique keys' => array(
+        'rlid' => array('rlid'),
+      ),
+      'foreign keys' => array(
+        'rsc_library_request' => array(
+          'table' => 'rsc_library_request',
+          'columns' => array('rid' => 'rid'),
+        ),
+        'rsc_library_request_action' => array(
+          'table' => 'rsc_library_request_action',
+          'columns' => array('action' => 'raid'),
+        ),
+        'users' => array(
+          'table' => 'users',
+          'columns' => array('user' => 'uid'),
+        ),
+      ),
+      'primary key' => array('rlid'),
+    ),
+
+    'rsc_library_request_action' => array(
+      'description' => 'List of possible actions on requests',
+      'fields' => array(
+        'raid' => array(
+          'description' => 'Request Action ID',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'short_name' => array(
+          'description' => 'Describe the action in one word.',
+          'type' => 'varchar',
+          'length' => 20,
+          'not null' => TRUE,
+        ),
+        'description' => array(
+          'description' => 'Describe the action in one sentence.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+      ),
+      'unique keys' => array(
+        'raid' => array('raid'),
+      ),
+      'primary key' => array('raid'),
+    ),
+
+  );
+
+}
+
+
+/**
  * Implementations of https://api.drupal.org/api/drupal/modules!system!system.api.php/function/hook_update_N/7.x
  *
  * Never renumber update functions.
