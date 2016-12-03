@@ -38,13 +38,13 @@ function rsc_library_menu() {
   );
 
   $items['admin/structure/rsc_library/settings'] = array(
-    'title' => t('Settings'),
+    'title'            => t('Settings'),
     'type'             => MENU_DEFAULT_LOCAL_TASK,
     'weight'           => -100,
   );
 
   $items['admin/structure/rsc_library/actions'] = array(
-    'title' => t('Actions'),
+    'title'            => t('Actions'),
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('rsc_library_actions'),
     'file'             => 'rsc_library.admin.inc',
