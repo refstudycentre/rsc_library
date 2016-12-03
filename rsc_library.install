@@ -106,7 +106,7 @@ function _rsc_library_grant_permissions($rid, array $permissions = array()) {
  * - https://api.drupal.org/api/drupal/modules!system!system.api.php/function/hook_schema/7.x
  * - https://www.drupal.org/docs/7/api/schema-api/quick-start-guide
  */
-function hook_schema() {
+function rsc_library_schema() {
 
   return array(
 
@@ -162,20 +162,21 @@ function hook_schema() {
           'not null' => TRUE,
         ),
         'action' => array(
-          'description' => 'What actions was performed?',
+          'description' => 'raid: Which action was performed?',
           'type' => 'int',
           'unsigned' => TRUE,
           'not null' => TRUE,
         ),
         'user' => array(
-          'description' => 'Who performed the action?',
+          'description' => 'uid: Who performed the action?',
           'type' => 'int',
           'unsigned' => TRUE,
           'not null' => TRUE,
         ),
         'timestamp' => array(
-          'description' => 'When was the action performed?',
-          'type' => '',
+          'description' => 'Unix timestamp: When was the action performed?',
+          'type' => 'int',
+          // See http://stackoverflow.com/questions/4289793/how-should-unix-timestamps-be-stored-in-int-columns
           'not null' => TRUE,
         ),
       ),
@@ -422,3 +423,29 @@ function rsc_library_update_7204() {
 
 }
 
+
+/**
+ * Create rsc_library_request table
+ */
+function rsc_library_update_7205() {
+  $schema = rsc_library_schema();
+  db_create_table('rsc_library_request', $schema['rsc_library_request']);
+}
+
+
+/**
+ * Create rsc_library_request_log table
+ */
+function rsc_library_update_7206() {
+  $schema = rsc_library_schema();
+  db_create_table('rsc_library_request_log', $schema['rsc_library_request_log']);
+}
+
+
+/**
+ * Create rsc_library_request_action table
+ */
+function rsc_library_update_7207() {
+  $schema = rsc_library_schema();
+  db_create_table('rsc_library_request_action', $schema['rsc_library_request_action']);
+}
