@@ -16,6 +16,15 @@ function rsc_library_settings($form, &$form_state) {
     '#required' => TRUE,
   );
 
+  $form['rsc_library_request_feedback_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email address for the "reply-to" field of emails containing requested content:'),
+    '#description' => t("If a user decides to reply to an email they received from the rsc_library module, to whom should it go?"),
+    '#maxlength' => 255,
+    '#default_value' => variable_get('rsc_library_request_feedback_email', ''),
+    '#required' => TRUE,
+  );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t("Save"),
