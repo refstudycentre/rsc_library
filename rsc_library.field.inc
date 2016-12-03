@@ -512,7 +512,7 @@ function rsc_library_field__setup_field_instances() {
       'display' => array(
         'default' => array(
           'label' => 'hidden',
-          'type' => 'link_label',
+          'type' => 'link_default',
           'weight' => 12,
         ),
         'teaser' => array(
@@ -545,7 +545,7 @@ function rsc_library_field__setup_field_instances() {
       'display' => array(
         'default' => array(
           'label' => 'hidden',
-          'type' => 'link_label',
+          'type' => 'link_default',
           'weight' => 13,
         ),
         'teaser' => array(
@@ -578,7 +578,7 @@ function rsc_library_field__setup_field_instances() {
       'display' => array(
         'default' => array(
           'label' => 'hidden',
-          'type' => 'link_label',
+          'type' => 'link_default',
           'weight' => 14,
         ),
         'teaser' => array(
