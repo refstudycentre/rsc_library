@@ -135,3 +135,78 @@ function rsc_library_form_request_content_submit($form, &$form_state) {
   );
 
 }
+
+
+/**
+ * Form builder for the "pending requests" page
+ */
+function rsc_library_form_pending_requests($form, &$form_state) {
+
+  $result = db_query(<<<EOQ
+select *
+from rsc_library_request_log as l
+inner join (select rlid, max(l.timestamp) as t from rsc_library_request_log l group by rid) as x on l.rlid=x.rlid
+inner join rsc_library_request as r on r.rid=l.rid
+EOQ
+  );
+
+  $header = array(
+    'user'  => t('User'),
+    'email' => t('Email address'),
+    'nid'   => t("Requested node"),
+    'time'  => t("Time stamp"),
+  );
+
+  $options = array();
+
+  foreach ($result as $record) {
+    $options[] = array(
+      'user'  => $record->user ? l($record->user, 'user/'.$record->user) : "anon.",
+      'email' => $record->email,
+      'nid'   => l($record->nid, 'node/'.$record->nid),
+      'time'  => strftime("%Y-%m-%d %H:%M:%S", $record->t),
+    );
+  }
+
+  $form['pending'] = array(
+    '#title' => t("Pending requests"),
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $options,
+  );
+
+  $form['actions'] = array(
+    'accept' => array(
+      '#prefix' => '<p>',
+      '#type' => 'submit',
+      '#value' => t("Accept"),
+      '#suffix' => t("Send the requested content to the respective users.").'</p>',
+    ),
+    'ignore' => array(
+      '#prefix' => '<p>',
+      '#type' => 'submit',
+      '#value' => t("Ignore"),
+      '#suffix' => t("Ignore the request. Don't do anything else.").'</p>',
+    ),
+    'reject' => array(
+      '#prefix' => '<p>',
+      '#type' => 'submit',
+      '#value' => t("Reject"),
+      '#suffix' => t("Notify the user that their request was rejected.").'</p>',
+    ),
+  );
+
+  return $form;
+
+}
+
+
+function rsc_library_form_pending_requests_validate($form, &$form_state) {
+
+}
+
+
+function rsc_library_form_pending_requests_submit($form, &$form_state) {
+  dpm($form_state);
+}
+

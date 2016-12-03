@@ -14,6 +14,9 @@ function rsc_library_permission() {
     'administer rsc_library' => array(
       'title' => t('Administer RSC Libraries'),
     ),
+    'administer rsc_library_requests' => array(
+      'title' => t('Administer RSC Library content requests'),
+    ),
   );
 
   // permissions like "create $type content" are created automatically
@@ -49,6 +52,15 @@ function rsc_library_menu() {
     'page arguments'   => array('rsc_library_actions'),
     'file'             => 'rsc_library.admin.inc',
     'access arguments' => array('administer rsc_library'),
+    'type'             => MENU_LOCAL_TASK
+  );
+
+  $items['admin/content/requests'] = array(
+    'title'            => t('RSC Library: Requests'),
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('rsc_library_form_pending_requests'),
+    'file'             => 'rsc_library.form.inc',
+    'access arguments' => array('administer rsc_library_requests'),
     'type'             => MENU_LOCAL_TASK
   );
 
