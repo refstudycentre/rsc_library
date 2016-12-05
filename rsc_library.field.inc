@@ -479,7 +479,7 @@ function rsc_library_field__setup_field_instances() {
     'link_to_chapter' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_chapter',
       'label'       => $t('Link to chapter'),
-      'description' => $t('Link to an external website containing the full text for the chapter. The "title" is the text which will appear on the button.'),
+      'description' => $t('Link to an external website containing the full text for the chapter.'),
       'required'    => FALSE,
       'settings'    => array(
         'absolute_url'    => 1,
@@ -513,7 +513,7 @@ function rsc_library_field__setup_field_instances() {
     'link_to_publisher' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_publisher',
       'label'       => $t('Link to publisher'),
-      'description' => $t('Link to the publisher\'s website. The "title" is the text which will appear on the button.'),
+      'description' => $t('Link to the publisher\'s website.'),
       'required'    => FALSE,
       'settings'    => array(
         'absolute_url'    => 1,
@@ -547,7 +547,7 @@ function rsc_library_field__setup_field_instances() {
     'link_to_buy' => array(
       'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_buy',
       'label'       => $t('Link to buy'),
-      'description' => $t('Link to a supplier which sells the full book. The "title" is the text which will appear on the button.'),
+      'description' => $t('Link to a supplier which sells the full book.'),
       'required'    => FALSE,
       'settings'    => array(
         'absolute_url'    => 1,
