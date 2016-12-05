@@ -79,8 +79,8 @@ function rsc_library_field__setup_static_fields() {
       'cardinality' => 1,
     ),
     array(
-      'field_name' => RSC_LIBRARY_PREFIX . '_link',
-      'type' => 'text',
+      'field_name' => RSC_LIBRARY_PREFIX . '_link_to_content',
+      'type' => 'link_field',
       'cardinality' => 1,
     ),
     array(
@@ -442,18 +442,26 @@ function rsc_library_field__setup_field_instances() {
         'weight' => 15,
       ),
     ),
-    'link' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX.'_link',
-      'label'       => $t('Link'),
-      'description' => $t('Link to an external website. Include the full anchor tag, like this: !html', array(
-        '!html' => htmlspecialchars('<a href="" target="_blank">Read article</a>'),
-      )),
-      'required'    => FALSE,
-      'settings'    => array('text_processing' => 1), // enable rich text formats
+    'link_to_content' => array(
+      'field_name'  => RSC_LIBRARY_PREFIX.'_link_to_content',
+      'label'       => $t('Link to content'),
+      'description' => $t('Link to an external website containing the full text.'),
+      'required'    => TRUE,
+      'settings'    => array(
+        'absolute_url'    => 1,
+        'validate_url'    => 1,
+        'url'             => 0,
+        'title'           => 'required',
+        'title_maxlength' => 255,
+        'enable_tokens'   => 0,
+        'attributes'      => array(
+          'target' => '_blank',
+        ),
+      ),
       'display' => array(
         'default' => array(
           'label' => 'hidden',
-          'type' => 'text_default',
+          'type' => 'link_default',
           'weight' => 11,
         ),
         'teaser' => array(
@@ -704,7 +712,7 @@ function rsc_library_field__setup_field_instances() {
     ),
     'rsc_library_link' => array(
       $field_instances_on_nodes['summary'],
-      $field_instances_on_nodes['link'],
+      $field_instances_on_nodes['link_to_content'],
       $field_instances_on_nodes['pages'],
       $field_instances_on_nodes['weight'],
       $field_instances_on_nodes['format'],
