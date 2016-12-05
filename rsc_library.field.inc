@@ -453,8 +453,8 @@ function rsc_library_field__setup_field_instances() {
 //      ),
       'display' => array(
         'default' => array(
-          'label' => 'hidden', // TODO: rsc_attachment_formatter
-//          'type' => 'rsc_attachment_formatter_formatter_dropdown',
+          'label' => 'hidden',
+          'type' => 'rsc_attachment_formatter_auto',
           'weight' => 10,
         ),
         'teaser' => array(
