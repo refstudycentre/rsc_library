@@ -451,7 +451,8 @@ function rsc_library_field__setup_field_instances() {
         'absolute_url'    => 1,
         'validate_url'    => 1,
         'url'             => 0,
-        'title'           => 'required',
+        'title'           => 'value',
+        'title_value'     => $t('Read article'),
         'title_maxlength' => 255,
         'enable_tokens'   => 0,
         'attributes'      => array(
@@ -484,7 +485,8 @@ function rsc_library_field__setup_field_instances() {
         'absolute_url'    => 1,
         'validate_url'    => 1,
         'url'             => 0,
-        'title'           => 'required',
+        'title'           => 'value',
+        'title_value'     => $t('View chapter'),
         'title_maxlength' => 255,
         'enable_tokens'   => 0,
         'attributes'      => array(
@@ -517,7 +519,8 @@ function rsc_library_field__setup_field_instances() {
         'absolute_url'    => 1,
         'validate_url'    => 1,
         'url'             => 0,
-        'title'           => 'required',
+        'title'           => 'value',
+        'title_value'     => $t('Visit publisher'),
         'title_maxlength' => 255,
         'enable_tokens'   => 0,
         'attributes'      => array(
@@ -550,7 +553,8 @@ function rsc_library_field__setup_field_instances() {
         'absolute_url'    => 1,
         'validate_url'    => 1,
         'url'             => 0,
-        'title'           => 'required',
+        'title'           => 'value',
+        'title_value'     => $t('Buy book'),
         'title_maxlength' => 255,
         'enable_tokens'   => 0,
         'attributes'      => array(
