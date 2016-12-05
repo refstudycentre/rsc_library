@@ -216,6 +216,16 @@ function rsc_library_node_settings($node = NULL) {
       '#default_value' => isset($settings['vocabs']['source']) ? $settings['vocabs']['source'] : -1,
       '#options'       => $vocab_options,
     );
+
+    $form['vocabs']['copyright'] = array(
+      '#type'          => 'select',
+      '#required'      => FALSE,
+      '#multiple'      => FALSE,
+      '#title'         => t('copyright holders'),
+      '#description'   => t('A reference field to terms in this vocabulary will be created on library content types.'),
+      '#default_value' => isset($settings['vocabs']['copyright']) ? $settings['vocabs']['copyright'] : -1,
+      '#options'       => $vocab_options,
+    );
   
     $form['vocabs']['tag'] = array(
       '#type'          => 'select',

@@ -114,11 +114,6 @@ function rsc_library_field__setup_static_fields() {
       'cardinality' => 1,
     ),
     array(
-      'field_name' => RSC_LIBRARY_PREFIX . '_copyright_notice',
-      'type' => 'text',
-      'cardinality' => 1,
-    ),
-    array(
       'field_name' => RSC_LIBRARY_PREFIX . '_featured_image',
       'type' => 'image',
       'cardinality' => 1,
@@ -175,13 +170,14 @@ function rsc_library_field__setup_taxonomy_fields_for_library($lid) {
 
   // cardinality settings for the taxonomy fields added below
   static $cardinality = array(
-    'author'     => FIELD_CARDINALITY_UNLIMITED,
-    'editor'     => FIELD_CARDINALITY_UNLIMITED,
-    'publisher'  => 1,
-    'tag'        => FIELD_CARDINALITY_UNLIMITED,
-    'category'   => FIELD_CARDINALITY_UNLIMITED,
-    'difficulty' => 1,
-    'source'     => 1,
+    'author'           => FIELD_CARDINALITY_UNLIMITED,
+    'editor'           => FIELD_CARDINALITY_UNLIMITED,
+    'publisher'        => 1,
+    'tag'              => FIELD_CARDINALITY_UNLIMITED,
+    'category'         => FIELD_CARDINALITY_UNLIMITED,
+    'difficulty'       => 1,
+    'source'           => 1,
+    'copyright' => 1,
   );
 
   // Get the proper translation function, since this function might run during install, or any other time
@@ -418,28 +414,6 @@ function rsc_library_field__setup_field_instances() {
       'widget'      => array(
         'weight' => 12,
         'type'   => 'options_buttons',
-      ),
-    ),
-    'copyright_notice' => array(
-      'field_name'  => RSC_LIBRARY_PREFIX."_copyright_notice",
-      'label'       => $t('Copyright notice'),
-      'description' => $t('Displayed as: This material is made available with the permission of ___.'),
-      'required'    => FALSE,
-      'display' => array(
-        'default' => array(
-          'label' => 'hidden',
-          'type' => 'text_plain',
-          'weight' => 15,
-        ),
-        'teaser' => array(
-          'type' => 'hidden',
-        ),
-        RSC_LIBRARY_PREFIX . '_block' => array(
-          'type' => 'hidden',
-        ),
-      ),
-      'widget'      => array(
-        'weight' => 13,
       ),
     ),
     'attachment' => array(
@@ -754,7 +728,6 @@ function rsc_library_field__setup_field_instances() {
       $field_instances_on_nodes['book_title'],
       $field_instances_on_nodes['date'],
       $field_instances_on_nodes['page_range'],
-      $field_instances_on_nodes['copyright_notice'],
       $field_instances_on_nodes['attachment'] + array(
         'settings' => array(
           'file_extensions' => 'pdf mp3',
@@ -921,6 +894,31 @@ function rsc_library_field__setup_field_instances_for_library($lid) {
       'bundles'     => array(
         'rsc_library_article',
         'rsc_library_link',
+      ),
+    ),
+    'copyright' => array(
+      'label'       => $t('Copyright notice'),
+      'description' => $t('Displayed as: This material is made available with the permission of ___.'),
+      'required'    => FALSE,
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'taxonomy_term_reference_plain',
+          'weight' => 15,
+        ),
+        'teaser' => array(
+          'type' => 'hidden',
+        ),
+        RSC_LIBRARY_PREFIX . '_block' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget'      => array(
+        'type' => 'taxonomy_autocomplete',
+        'weight' => 13,
+      ),
+      'bundles'     => array(
+        'rsc_library_book_preview',
       ),
     ),
     'difficulty' => array(

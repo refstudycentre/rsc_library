@@ -292,13 +292,6 @@ function rsc_library_preprocess_field(&$variables) {
 
     $field_name = $variables['element']['#field_name'];
 
-    // Modify the display of some fields
-    if ($field_name == RSC_LIBRARY_PREFIX . '_copyright_notice') {
-      // assume there is only one field value
-      $variables['items'][0]['#prefix'] = t("This material is made available with the permission of ");
-      $variables['items'][0]['#suffix'] = t(".");
-    }
-
 // TODO: improve this bit on microdata, or move it to a separate module?
     if ($variables['element']['#bundle'] == 'rsc_library_article') {
 
@@ -353,6 +346,9 @@ function rsc_library_preprocess_field(&$variables) {
     }
     if (substr($field_name, strlen(RSC_LIBRARY_PREFIX), 8) === '_source_') {
       $variables['theme_hook_suggestions'][] = 'field__rscl_source__';
+    }
+    if (substr($field_name, strlen(RSC_LIBRARY_PREFIX), 11) === '_copyright_') {
+      $variables['theme_hook_suggestions'][] = 'field__rscl_copyright__';
     }
     if (substr($field_name, strlen(RSC_LIBRARY_PREFIX), 11) === '_publisher_') {
       $variables['theme_hook_suggestions'][] = 'field__rscl_publisher__';
